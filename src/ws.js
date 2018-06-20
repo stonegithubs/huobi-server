@@ -6,6 +6,7 @@ const WS_URL = 'wss://api.huobi.br.com/ws';
 
 
 var orderbook = {};
+var symbols = ['btcusdt'];
 
 exports.OrderBook = orderbook;
 
@@ -17,8 +18,8 @@ function handle(data) {
         case 'depth':
             orderbook[symbol] = data.tick;
             // console.log('depth', data.tick);
-            console.log('买盘',getSameAmount(data.tick.bids))
-            console.log('卖盘',getSameAmount(data.tick.asks))
+            console.log(symbols[0] + '买盘',getSameAmount(data.tick.bids))
+            console.log(symbols[0] + '卖盘',getSameAmount(data.tick.asks))
             break;
         case 'kline':
             // getSameAmount()
@@ -28,7 +29,6 @@ function handle(data) {
 }
 
 function subscribe(ws) {
-    var symbols = ['btcusdt'];
     // 订阅深度
     // 谨慎选择合并的深度，ws每次推送全量的深度数据，若未能及时处理容易引起消息堆积并且引发行情延时
     for (let symbol of symbols) {
