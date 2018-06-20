@@ -1,7 +1,7 @@
 // const moment = require('moment');
 const WebSocket = require('ws');
 const pako = require('pako');
-
+const getSameAmount = require('./getSameAmount');
 const WS_URL = 'wss://api.huobi.br.com/ws';
 
 
@@ -17,9 +17,12 @@ function handle(data) {
         case 'depth':
             orderbook[symbol] = data.tick;
             // console.log('depth', data.tick);
+            console.log('买盘',getSameAmount(data.tick.bids))
+            console.log('卖盘',getSameAmount(data.tick.asks))
             break;
         case 'kline':
-            console.log('kline', data.tick);
+            // getSameAmount()
+            // console.log('kline', data.tick);
             break;
     }
 }
