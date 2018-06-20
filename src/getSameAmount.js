@@ -15,7 +15,7 @@ const getSameAmount = function (data) {
     }
     let arr = [];
     for (let key in countTemp) {
-        if (countTemp[key] > 1 || Number(key) > 0.5) {
+        if (countTemp[key] > 1) {
             let sum = countTemp[key] * key;
             if (1) {
                 arr.push({
