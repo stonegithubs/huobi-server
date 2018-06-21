@@ -6,7 +6,7 @@ const WS_URL = 'wss://api.huobi.br.com/ws';
 
 
 var orderbook = {};
-var symbols = ['btcusdt'];
+var symbols = ['htusdt'];
 
 exports.OrderBook = orderbook;
 
