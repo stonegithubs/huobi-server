@@ -1,5 +1,0 @@
-
-
-const sort = function (object) {
-    
-}
