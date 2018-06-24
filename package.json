@@ -12,6 +12,8 @@
     "http-errors": "~1.6.2",
     "morgan": "~1.9.0",
     "pako": "^1.0.6",
+    "vue": "^2.5.16",
+    "vue-server-renderer": "^2.5.16",
     "ws": "^5.2.0"
   }
 }
