@@ -3,9 +3,8 @@ var express = require('express');
 var path = require('path');
 var cookieParser = require('cookie-parser');
 var logger = require('morgan');
-// const wsinit = require('./lib/ws');
 var indexRouter = require('./routes/index');
-// wsinit();
+var api = require('./routes/api');
 var app = express();
 
 app.use(logger('dev'));
@@ -13,6 +12,7 @@ app.use(express.json());
 app.use(express.urlencoded({ extended: false }));
 app.use(cookieParser());
 app.use(express.static(path.join(__dirname, 'public')));
+app.use(api);
 
 // catch 404 and forward to error handler
 app.use(function(req, res, next) {
@@ -27,7 +27,10 @@ app.use(function(err, req, res, next) {
 
   // render the error page
   res.status(err.status || 500);
-  res.render('error');
+  res.end(JSON.stringify({
+    status: 'error',
+    msg: 'error'
+  }));
 });
 
 
