@@ -5,70 +5,66 @@ const connect = require('../mysql/connect');
 
 var router = express.Router();
 
-
-router.get('/api/v1/createDepth', function(req, res, next) {
-  res.writeHead(200);
-  console.log(2)
-  connect.query(`
-    CREATE TABLE IF NOT EXISTS HUOBI_DEPTH(
-      id INT UNSIGNED AUTO_INCREMENT,
-      count INT NOT NULL,
-      amount VARCHAR(20) NOT NULL,
-      sumCount VARCHAR(20) NOT NULL,
-      sumMoneny VARCHAR(20) NOT NULL,
-      price VARCHAR(20) NOT NULL,
-      prices VARCHAR(40) NOT NULL,
-      time DATE,
-      PRIMARY KEY ( id )
-  )ENGINE=InnoDB DEFAULT CHARSET=utf8;
-  `).then((mysqlRes, fields) => {
-    // res.end(url.parse(res, true));
-    res.end(JSON.stringify(mysqlRes));
-    console.log('mysqlRes')
-    
-    // res.send(JSON.stringify(mysqlRes));
+function sendJSON(json) {
+  return JSON.stringify(json)
+}
+router.get('/api/v1/showTables', function(req, res, next) {
+  let param = req.query;
+  connect.query(`SHOW TABLES`).then((mysqlRes, fields) => {
+    res.end(sendJSON({
+      data: mysqlRes,
+      fields: fields,
+      status: 'ok'
+    }));
   }).catch(error => {
-    console.log(error)
-    // res.end('url.parse(res, true)');
-    // res.send(JSON.stringify(error));
-    res.end();
-  }).finally(() => {
-    console.log(2.5)
-    console.log('next')
-    res.end();
-    // next();
+    next(error);
   })
 });
 
+router.post('/api/v1/createTable', function(req, res, next) {
+  let param = req.body;
+  connect.query(`
+    CREATE TABLE IF NOT EXISTS ${param.tableName}(
+      id INT UNSIGNED AUTO_INCREMENT,
+      symbol VARCHAR(20) NOT NULL,
+      time DATE,
+      asksList VARCHAR(10000) NOT NULL,
+      bidsList VARCHAR(10000) NOT NULL,
+      PRIMARY KEY ( id )
+  )ENGINE=InnoDB DEFAULT CHARSET=utf8;
+  `).then((mysqlRes, fields) => {
+    res.end(JSON.stringify(mysqlRes));
+  }).catch(next)
+});
+router.post('/api/v1/delTable', function(req, res, next) {
+  let param = req.body;
+  connect.query(`DROP TABLE ${param.tableName}`).then((mysqlRes, fields) => {
+    res.end(JSON.stringify(mysqlRes));
+  }).catch(next)
+});
 router.post('/api/v1/depth', function(req, res, next) {
-  res.writeHead(200);
+  let params = req.body;
   let param = {
-    count: 1,
-    amount : '1',
-    sumCount: '1',
-    sumMoneny: '1',
-    price : '1',
-    prices: '1',
+    symbol: params.symbol,
     time: new Date(),
+    asksList: JSON.stringify(params.asksList),
+    bidsList: JSON.stringify(params.bidsList),
   }
+  // let param = {
+  //   symbol: '1.symbol',
+  //   time: new Date(),
+  //   asksList: JSON.stringify([]),
+  //   bidsList: JSON.stringify([]),
+  // }
+
   connect.query(`
   INSERT INTO HUOBI_DEPTH SET ?;
   `, param).then((mysqlRes, fields) => {
-    // res.end(url.parse(res, true));
+    console.log(fields)
     res.end(JSON.stringify(mysqlRes));
-    console.log('mysqlRes')
-    
-    // res.send(JSON.stringify(mysqlRes));
-  }).catch(error => {
-    console.log(error)
-    // res.end('url.parse(res, true)');
-    // res.send(JSON.stringify(error));
-    res.end();
-  }).finally(() => {
-    console.log(2.5)
-    console.log('next')
-    res.end();
-    // next();
+  }).catch((err) => {
+    console.log(err)
+    next(err)
   })
 });
 module.exports = router;

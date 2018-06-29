@@ -1,5 +1,5 @@
 const mysql       = require('mysql');
-var mysqlConfig = require('config').get('mysql');
+var mysqlConfig = require('config').get('mysqlLocal');
 
 var connection = mysql.createConnection({
   host     : mysqlConfig.host,
@@ -18,13 +18,10 @@ connection.connect();
 
 function query (sql, params) {
   return new Promise((resove, reject) => {
-    // console.log(connection)
-    // connection.connect();
     connection.query(sql, params, function (error, results, fields) {
-      console.log('The solution is: ', results, error);
       if (error) {
         reject(error);
-        throw error;
+        return;
       };
       resove(results);
     });
