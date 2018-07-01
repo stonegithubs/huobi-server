@@ -27,19 +27,30 @@ router.post('/api/v1/createTable', function(req, res, next) {
     CREATE TABLE IF NOT EXISTS ${param.tableName}(
       id INT UNSIGNED AUTO_INCREMENT,
       symbol VARCHAR(20) NOT NULL,
-      time DATE,
+      time DATETIME,
       asksList VARCHAR(10000) NOT NULL,
       bidsList VARCHAR(10000) NOT NULL,
       PRIMARY KEY ( id )
   )ENGINE=InnoDB DEFAULT CHARSET=utf8;
   `).then((mysqlRes, fields) => {
-    res.end(JSON.stringify(mysqlRes));
-  }).catch(next)
+    res.end(JSON.stringify({
+      data: mysqlRes,
+      fields: fields,
+      status: 'ok'
+    }));
+  }).catch((err) => {
+    console.log(err);
+    next(err);
+  })
 });
 router.post('/api/v1/delTable', function(req, res, next) {
   let param = req.body;
   connect.query(`DROP TABLE ${param.tableName}`).then((mysqlRes, fields) => {
-    res.end(JSON.stringify(mysqlRes));
+    res.end(JSON.stringify({
+      data: mysqlRes,
+      fields: fields,
+      status: 'ok'
+    }));
   }).catch(next)
 });
 router.post('/api/v1/depth', function(req, res, next) {
