@@ -78,4 +78,17 @@ router.post('/api/v1/depth', function(req, res, next) {
     next(err)
   })
 });
+
+router.get('/api/v1/select', function(req, res, next) {
+  let params = req.query;
+
+  connect.query(`
+  SELECT * FROM ${params.tableName};
+  `).then((mysqlRes, fields) => {
+    res.end(JSON.stringify(mysqlRes));
+  }).catch((err) => {
+    console.log(err)
+    next(err)
+  })
+});
 module.exports = router;
