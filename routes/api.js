@@ -71,7 +71,6 @@ router.post('/api/v1/depth', function(req, res, next) {
   connect.query(`
   INSERT INTO HUOBI_DEPTH SET ?;
   `, param).then((mysqlRes, fields) => {
-    console.log(fields)
     res.end(JSON.stringify(mysqlRes));
   }).catch((err) => {
     console.log(err)
