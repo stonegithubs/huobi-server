@@ -2,7 +2,7 @@ var express = require('express');
 var url = require('url');
 const upgrade = require('../lib/ws-server');
 const connect = require('../mysql/connect');
-
+const hbsdk = require('../lib/sdk/hbsdk');
 var router = express.Router();
 
 function sendJSON(json) {
@@ -88,6 +88,18 @@ router.get('/api/v1/select', function(req, res, next) {
   }).catch((err) => {
     console.log(err)
     next(err)
+  })
+});
+router.post('/api/v1/buy_limit', function(req, res, next) {
+  let params = req.body;
+  hbsdk.buy_limit(params).then((res) => {
+    res.end(JSON.stringify({
+      data: {},
+      fields: {},
+      status: 'ok'
+    }));
+  }).catch(err => {
+    res.end(JSON.stringify(err));
   })
 });
 module.exports = router;
