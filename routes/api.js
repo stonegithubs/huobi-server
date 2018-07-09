@@ -209,7 +209,6 @@ router.get('/api/v1/get_order', function (req, res, next) {
  */
 router.get('/api/v1/get_kline', function (req, res, next) {
     let params = req.query;
-    
     hbsdk.getKline(params).then((data) => {
         res.end(JSON.stringify({
             data: data,
