@@ -28,6 +28,7 @@ router.post('/api/v1/createTable', function (req, res, next) {
       id INT UNSIGNED AUTO_INCREMENT,
       symbol VARCHAR(20) NOT NULL,
       time DATETIME,
+      tick VARCHAR(200) NOT NULL,
       asksList VARCHAR(10000) NOT NULL,
       bidsList VARCHAR(10000) NOT NULL,
       PRIMARY KEY ( id )
@@ -58,6 +59,7 @@ router.post('/api/v1/depth', function (req, res, next) {
     let param = {
         symbol: params.symbol,
         time: new Date(),
+        tick: JSON.stringify(params.tick),
         asksList: JSON.stringify(params.asksList),
         bidsList: JSON.stringify(params.bidsList),
     }
