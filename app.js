@@ -40,3 +40,21 @@ app.use(function(err, req, res, next) {
 
 
 module.exports = app;
+
+// let playList = document.querySelectorAll('.media-b');
+// console.log(playList)
+// let index = 0;
+// let len = playList.length;
+// let timoutDoIt = function () {
+//   console.log(index, len)
+//   if (index === len) {
+//     return;
+//   }
+//   playList[index].click();
+//   index++;
+//   setTimeout(() => {
+
+//     timoutDoIt();
+//   }, 600000);
+// }
+// timoutDoIt();
