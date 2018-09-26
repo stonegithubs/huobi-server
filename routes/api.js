@@ -1,6 +1,6 @@
 var express = require('express');
 var url = require('url');
-const upgrade = require('../lib/ws-server');
+
 const connect = require('../mysql/connect');
 const hbsdk = require('../lib/sdk/hbsdk');
 var router = express.Router();
@@ -8,6 +8,9 @@ var router = express.Router();
 function sendJSON(json) {
     return JSON.stringify(json)
 }
+/**
+ * 查表
+ */
 router.get('/api/v1/showTables', function (req, res, next) {
     let param = req.query;
     connect.query(`SHOW TABLES`).then((mysqlRes, fields) => {
@@ -20,7 +23,9 @@ router.get('/api/v1/showTables', function (req, res, next) {
         next(error);
     })
 });
-
+/**
+ * 创建表
+ */
 router.post('/api/v1/createTable', function (req, res, next) {
     let param = req.body;
     connect.query(`
@@ -54,6 +59,10 @@ router.post('/api/v1/delTable', function (req, res, next) {
         }));
     }).catch(next)
 });
+
+/**
+ * 查挂单深度
+ */
 router.post('/api/v1/depth', function (req, res, next) {
     let params = req.body;
     let param = {
@@ -162,15 +171,6 @@ router.get('/api/v1/openOrders', function (req, res, next) {
         console.log(err);
         res.end(JSON.stringify(err));
     })
-    // hbsdk.getOpenOrders(params).then((data) => {
-    //     res.end(JSON.stringify({
-    //         data: data,
-    //         status: 'ok'
-    //     }));
-    // }).catch(err => {
-    //     console.log(err);
-    //     res.end(JSON.stringify(err));
-    // })
 });
 
 /**
