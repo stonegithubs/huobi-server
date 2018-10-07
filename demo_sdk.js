@@ -18,7 +18,7 @@ function run() {
     // hbsdk.get_open_orders('btcusdt').then(console.log);
 
     // 第三步，交易
-    hbsdk.buy_limit('btcusdt', 0.01, 0.1);
+    // hbsdk.buy_limit('btcusdt', 0.01, 0.1);
     // 注意交易是有精度的，精度数据在以下接口中获取
     // https://api.huobi.pro/v1/common/symbols
 
