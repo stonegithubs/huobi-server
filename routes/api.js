@@ -221,4 +221,20 @@ router.get('/api/v1/get_kline', function (req, res, next) {
         res.end(JSON.stringify(err));
     })
 });
+
+/**
+ * 获取深度
+ */
+router.get('/api/market/depth', function (req, res, next) {
+    let params = req.query;
+    hbsdk.getDepth(params).then((data) => {
+        res.end(JSON.stringify({
+            data: data,
+            status: 'ok'
+        }));
+    }).catch(err => {
+        console.log(err);
+        res.end(JSON.stringify(err));
+    })
+});
 module.exports = router;
