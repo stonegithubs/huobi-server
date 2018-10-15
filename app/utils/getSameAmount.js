@@ -19,7 +19,7 @@ let config = {
 function setConfig(newConfig) {
 	Object.assign(config, newConfig);
 }
-module.exports = setConfig;
+
 /**
  * 合并相同的价格统计次数并排序
  * @param {Array<Array<number>>} data
