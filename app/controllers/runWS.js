@@ -27,7 +27,7 @@ async function start() {
     }).then((data) => {
         global.ethPrice = data[1].close;
     }).catch(console);
-
+    console.log(global.btcPrice, global.ethPrice)
     let precisionData = await hbsdk.getSymbols();
     let pricePrecision = 0;
     let amountPrecision = 0;

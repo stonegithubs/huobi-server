@@ -23,7 +23,7 @@ function handle(data) {
     }
 }
 
-exports.handle = handle;
+module.exports = handle;
 
 function handleDepth(data) {
     if (data.tick && data.symbol === 'btcusdt') {
@@ -35,6 +35,7 @@ function handleDepth(data) {
         let asksList = getSameAmount(data.tick.asks, {
             type: 'asks'
         });
+        // console.log(bidsList, asksList)
         // store.commit('UPTATE_DEPTH', {
         //     tick: data.tick,
         //     asksList: asksList,
