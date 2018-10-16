@@ -1,3 +1,4 @@
+const throttle = require('lodash.throttle');
 const getSameAmount = require('../utils/getSameAmount');
 
 /* 处理返回的数据 */
@@ -25,7 +26,7 @@ function handle(data) {
 
 module.exports = handle;
 
-function handleDepth(data) {
+const handleDepth = throttle(function (data) {
     if (data.tick && data.symbol === 'btcusdt') {
         let bidsFirst = data.tick.bids[0];
         let bidsList = getSameAmount(data.tick.bids, {
@@ -45,4 +46,4 @@ function handleDepth(data) {
         //     responseSymbol: data.symbol
         // });
     }
-}
+}, 5000, {trailing: false, leading: true});
