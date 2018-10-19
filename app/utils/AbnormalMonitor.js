@@ -1,4 +1,5 @@
-import moment from 'moment';
+// import moment from 'moment';
+const moment = require('moment');
 
 /* {
     "id":        601595424,
@@ -25,26 +26,48 @@ const toMillisecond = function (timeDes) {
     return temp[timeDes];
 }
 
-
+// default config
+const defaultConfig = {
+    // 目标幅度， 超过即是波动 range = 与上一个值的差/上一个值的，未 * 100
+    range: 0.1,
+    // 最大记录长度，数组长度
+    recordMaxLen: 10,
+    // 间隔时间
+    disTime: toMillisecond('1min'),
+}
 /**
  * 异常涨幅监控
  * status: 横盘 | 跌 | 涨
  * speed: number
- * 
+ * res = [{status, speed}, {status, speed}]
+ * @example 
+ * let am = new AbnormalMonitor();
+ * am.speed({value: 111, ts: Date.now()}, 1123421);
  */
 
-export default class AbnormalMonitoring {
-    constructor({data = {}} = {}) {
+class AbnormalMonitor {
+    /**
+     * 
+     * @param {Object} data. 
+     */
+    constructor({
+        data = {},
+        config = {},
+    } = {}) {
+        this.config = Object.assign(defaultConfig, config);
         this.reset();
-        this.speed(data.trade)
     }
     reset() {
         /**
          * {time: Date, status: '涨'}
          */
         this.historyStatus = [];
-        this.disTime = toMillisecond('1min'); // 5min
-        // 上一个
+        this.disTime = this.config.disTime; // 5min
+        // 最大记录长度，数组长度
+        this.recordMaxLen = this.config.recordMaxLen;
+        // 目标幅度， 超过即是波动
+        this.range = this.config.range;
+        // 上一个记录
         this._preTrade = {};
     }
     /**
@@ -63,7 +86,8 @@ export default class AbnormalMonitoring {
         // 默认状态为 横盘
         if (this.historyStatus.length === 0 && data) {
             this._preTrade = {
-                price: data.price,
+                // 默认为price
+                value: data.value,
                 ts: data.ts
             }
             this.pushSatus({
@@ -71,6 +95,7 @@ export default class AbnormalMonitoring {
                 strength: 0,
                 ts: ts,
                 timeUTC: moment(ts).format("YYYY/MM/DD h:mm:ss"),
+                value: data.value,
             });
              // 根据时间差算出下一个时间的节点，默认为5min后
             this.nextTime = ts + disTime;
@@ -83,22 +108,25 @@ export default class AbnormalMonitoring {
         // "tradeId":   601595424,
         // "ts":        1494495766000
         if (ts > this.nextTime) {
-            const disPrice = data.price - this._preTrade.price;
-            let status = disPrice > 0 ? '涨' : '跌';
-            if (Math.abs(disPrice) < 0.01) {
+            const disValue = data.value - this._preTrade.value;
+            let status = disValue > 0 ? '涨' : '跌';
+            
+            if ((Math.abs(disValue) / this._preTrade.value) < this.range) {
                 status = '横盘';
             }
+            console.log(disValue, (Math.abs(disValue) / this._preTrade.value) )
             this.pushSatus({
                 status: status,
-                strength: (disPrice / this._preTrade.price).toFixed(3),
+                // 强度
+                strength: (disValue / this._preTrade.value * 100).toFixed(3),
                 ts: ts,
-                price: data.price,
                 timeUTC: moment(ts).format("YYYY/MM/DD h:mm:ss"),
+                value: data.value,
             });
              // 根据时间差算出下一个时间的节点，默认为5min后
             this.nextTime = ts + disTime;
             this._preTrade = {
-                price: data.price,
+                value: data.value,
                 ts: data.ts
             }
         }
@@ -108,10 +136,11 @@ export default class AbnormalMonitoring {
      * @param {Object} status 
      */
     pushSatus(status) {
-        if (this.historyStatus.length > 6) {
+        if (this.historyStatus.length > this.recordMaxLen) {
             this.historyStatus.shift();
-            console.log(this.historyStatus, this)
         }
         this.historyStatus.push(status);
     }
 }
+
+module.exports = AbnormalMonitor;

@@ -16,11 +16,10 @@ function createTable(type) {
             resolve(mysqlRes, fields);
         }).catch((err) => {
             reject(err);
-        })
+        });
     });
 }
-
-
+exports.createTable = createTable;
 /**
  * 
  * @param {string} tableName 
@@ -32,10 +31,10 @@ function delTable(tableName) {
             resolve(mysqlRes, fields);
         }).catch(function(err) {
             reject(err);
-        })
+        });
     });
 }
-
+exports.delTable = delTable;
 /**
  * 
  * @param {string} tableName 
@@ -56,6 +55,7 @@ function insert(tableName = 'HUOBI_DEPTH', param) {
                 resolve(mysqlRes, fields);
             }).catch((err) => {
                 reject(err);
-            })
+            });
     });
 }
+exports.insert = insert;

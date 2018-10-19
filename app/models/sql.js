@@ -2,10 +2,12 @@
 exports.HUOBI_PRESSURE_ZONE = `
     CREATE TABLE IF NOT EXISTS HUOBI_PRESSURE_ZONE(
         id INT UNSIGNED AUTO_INCREMENT,
+        amount VARCHAR(20) NOT NULL,
+        exchange VARCHAR(15),
+        price VARCHAR(20) NOT NULL,
         symbol VARCHAR(15) NOT NULL,
-        time DATETIME,
-        value VARCHAR(15) NOT NULL,
         type VARCHAR(10) NOT NULL,
+        time DATETIME,
         PRIMARY KEY ( id )
     )ENGINE=InnoDB DEFAULT CHARSET=utf8;
 `;

@@ -3,6 +3,7 @@ var url = require('url');
 
 const connect = require('../mysql/connect');
 const hbsdk = require('../lib/sdk/hbsdk');
+const mysqlModel = require('../app/models/mysql');
 var router = express.Router();
 
 function sendJSON(json) {
@@ -23,31 +24,31 @@ router.get('/api/v1/showTables', function (req, res, next) {
         next(error);
     })
 });
+// mysqlModel.delTable('HUOBI_PRESSURE_ZONE')
+mysqlModel.createTable('HUOBI_PRESSURE_ZONE')
 /**
  * 创建表
  */
 router.post('/api/v1/createTable', function (req, res, next) {
     let param = req.body;
-    connect.query(`
-    CREATE TABLE IF NOT EXISTS ${param.tableName}(
-      id INT UNSIGNED AUTO_INCREMENT,
-      symbol VARCHAR(20) NOT NULL,
-      time DATETIME,
-      tick VARCHAR(200) NOT NULL,
-      asksList VARCHAR(10000) NOT NULL,
-      bidsList VARCHAR(10000) NOT NULL,
-      PRIMARY KEY ( id )
-  )ENGINE=InnoDB DEFAULT CHARSET=utf8;
-  `).then((mysqlRes, fields) => {
-            res.end(JSON.stringify({
-                data: mysqlRes,
-                fields: fields,
-                status: 'ok'
-            }));
-        }).catch((err) => {
-            console.log(err);
-            next(err);
-        })
+    if (typeof param.name !== 'string') {
+        res.end(JSON.stringify({
+            data: null,
+            msg: 'param error',
+            status: 'error'
+        }));
+        return;
+    }
+    mysqlModel.createTable('HUOBI_PRESSURE_ZONE').then((mysqlRes, fields) => {
+        res.end(JSON.stringify({
+            data: mysqlRes,
+            fields: fields,
+            status: 'ok'
+        }));
+    }).catch((err) => {
+        console.log(err);
+        next(err);
+    })
 });
 router.post('/api/v1/delTable', function (req, res, next) {
     let param = req.body;

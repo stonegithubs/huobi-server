@@ -1,9 +1,9 @@
 
 
 /**
- * 当不断的执行某任务，把方法放在do里调用{disTime} 后会自动停止执行
+ * 当不断的执行某任务，把方法放在do里调用， {disTime} 后会自动停止执行
  * 如果disTime内又满足执行某任务的条件，用activate 激活，
- * @param {number} disTime 
+ * @param {number} disTime 处理多长时间
  */
 
 class IntervalTask {
@@ -50,6 +50,12 @@ class IntervalTask {
         this.timer = setInterval(() => {
             this.taskStatus = 0;
         }, disTime);
+    }
+    /**
+     * 手动停止任务
+     */
+    stop() {
+        this.taskStatus = 0;
     }
 }
 
