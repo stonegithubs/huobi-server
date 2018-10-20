@@ -114,7 +114,6 @@ class AbnormalMonitor {
             if ((Math.abs(disValue) / this._preTrade.value) < this.range) {
                 status = '横盘';
             }
-            console.log(disValue, (Math.abs(disValue) / this._preTrade.value) )
             this.pushSatus({
                 status: status,
                 // 强度

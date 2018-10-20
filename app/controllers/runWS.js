@@ -56,6 +56,7 @@ async function start() {
             quoteCurrency: symbol.quote
         })
     });
+
 }
 exports.start = start;
 

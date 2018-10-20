@@ -126,9 +126,10 @@ const handleDepth = throttle(function (data) {
         ) {
             intervalTask.stop();
         }
-        if (bidsHistoryStatus[0].status !== '横盘' || asksHistoryStatus[0].status !== '横盘') {
+        if (bidsHistoryStatus[bidsHistoryStatus.length - 1].status !== '横盘' || asksHistoryStatus[asksHistoryStatus.length - 1].status !== '横盘') {
             intervalTask.activate();
         }
+        // console.log(bidsHistoryStatus, asksHistoryStatus)
         // 记录量的幅度
         intervalTask.do(() => {
             mysqlModel.insert('HUOBI_PRESSURE_ZONE', buy1);
