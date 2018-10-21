@@ -12,6 +12,18 @@ exports.HUOBI_PRESSURE_ZONE = `
     )ENGINE=InnoDB DEFAULT CHARSET=utf8;
 `;
 
+// 买卖交易金额
+exports.HUOBI_TRADE = `
+    CREATE TABLE IF NOT EXISTS HUOBI_TRADE(
+        id INT UNSIGNED AUTO_INCREMENT,
+        amount VARCHAR(20) NOT NULL,
+        exchange VARCHAR(15),
+        symbol VARCHAR(15) NOT NULL,
+        type VARCHAR(10) NOT NULL,
+        time DATETIME,
+        PRIMARY KEY ( id )
+    )ENGINE=InnoDB DEFAULT CHARSET=utf8;
+`;
 // 深度
 exports.HUOBO_DEPTH = `
     CREATE TABLE IF NOT EXISTS HUOBO_DEPTH(
@@ -24,3 +36,4 @@ exports.HUOBO_DEPTH = `
         PRIMARY KEY ( id )
     )ENGINE=InnoDB DEFAULT CHARSET=utf8;
 `;
+

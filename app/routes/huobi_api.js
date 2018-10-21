@@ -1,10 +1,12 @@
 var express = require('express');
 var url = require('url');
 
-const connect = require('../mysql/connect');
-const hbsdk = require('../lib/sdk/hbsdk');
-const mysqlModel = require('../app/models/mysql');
+const connect = require('../../mysql/connect');
+const hbsdk = require('../../lib/sdk/hbsdk');
+const mysqlModel = require('../models/mysql');
 var router = express.Router();
+
+const path = '/v1';
 
 function sendJSON(json) {
     return JSON.stringify(json)
@@ -12,7 +14,7 @@ function sendJSON(json) {
 /**
  * 查表
  */
-router.get('/api/v1/showTables', function (req, res, next) {
+router.get(path + '/showTables', function (req, res, next) {
     let param = req.query;
     connect.query(`SHOW TABLES`).then((mysqlRes, fields) => {
         res.end(sendJSON({
@@ -24,12 +26,11 @@ router.get('/api/v1/showTables', function (req, res, next) {
         next(error);
     })
 });
-// mysqlModel.delTable('HUOBI_PRESSURE_ZONE')
-mysqlModel.createTable('HUOBI_PRESSURE_ZONE')
+
 /**
  * 创建表
  */
-router.post('/api/v1/createTable', function (req, res, next) {
+router.post(path + '/createTable', function (req, res, next) {
     let param = req.body;
     if (typeof param.name !== 'string') {
         res.end(JSON.stringify({
@@ -50,7 +51,7 @@ router.post('/api/v1/createTable', function (req, res, next) {
         next(err);
     })
 });
-router.post('/api/v1/delTable', function (req, res, next) {
+router.post(path + '/delTable', function (req, res, next) {
     let param = req.body;
     connect.query(`DROP TABLE ${param.tableName}`).then((mysqlRes, fields) => {
         res.end(JSON.stringify({
@@ -64,7 +65,7 @@ router.post('/api/v1/delTable', function (req, res, next) {
 /**
  * 查挂单深度
  */
-router.post('/api/v1/depth', function (req, res, next) {
+router.post(path + '/depth', function (req, res, next) {
     let params = req.body;
     let param = {
         symbol: params.symbol,
@@ -90,7 +91,7 @@ router.post('/api/v1/depth', function (req, res, next) {
         })
 });
 
-router.get('/api/v1/select', function (req, res, next) {
+router.get(path + '/select', function (req, res, next) {
     let params = req.query;
 
     connect.query(`
@@ -106,7 +107,7 @@ router.get('/api/v1/select', function (req, res, next) {
 /**
  * 买单
  */
-router.post('/api/v1/buy_limit', function (req, res, next) {
+router.post(path + '/buy_limit', function (req, res, next) {
     let params = req.body;
     hbsdk.buy_limit(params).then((data) => {
         res.end(JSON.stringify({
@@ -121,7 +122,7 @@ router.post('/api/v1/buy_limit', function (req, res, next) {
 /**
  * 买卖单
  */
-router.post('/api/v1/limit', function (req, res, next) {
+router.post(path + '/limit', function (req, res, next) {
     let params = req.body;
     let action = params.action + '_limit';
     if (action !== 'buy_limit' && action !== 'sell_limit') {
@@ -144,7 +145,7 @@ router.post('/api/v1/limit', function (req, res, next) {
 /**
  * 取消订单
  */
-router.post('/api/v1/cancelOrder', function (req, res, next) {
+router.post(path + '/cancelOrder', function (req, res, next) {
     let params = req.body;
     hbsdk.cancelOrder(params.orderId).then((data) => {
         res.end(JSON.stringify({
@@ -160,7 +161,7 @@ router.post('/api/v1/cancelOrder', function (req, res, next) {
 /**
  * 查询未成交的订单
  */
-router.get('/api/v1/openOrders', function (req, res, next) {
+router.get(path + '/openOrders', function (req, res, next) {
     let params = req.query;
     
     hbsdk.get_open_orders(params.symbol).then((data) => {
@@ -177,7 +178,7 @@ router.get('/api/v1/openOrders', function (req, res, next) {
 /**
  * 查余额
  */
-router.get('/api/v1/get_balance', function (req, res, next) {
+router.get(path + '/get_balance', function (req, res, next) {
     let params = req.query;
     hbsdk.get_balance().then((data) => {
         res.end(JSON.stringify({
@@ -192,7 +193,7 @@ router.get('/api/v1/get_balance', function (req, res, next) {
 /**
  * 检查订单
  */
-router.get('/api/v1/get_order', function (req, res, next) {
+router.get(path + '/get_order', function (req, res, next) {
     let params = req.query;
     
     hbsdk.get_order(params.orderId).then((data) => {
@@ -210,7 +211,7 @@ router.get('/api/v1/get_order', function (req, res, next) {
 /**
  * 获取k线
  */
-router.get('/api/v1/get_kline', function (req, res, next) {
+router.get(path + '/get_kline', function (req, res, next) {
     let params = req.query;
     hbsdk.getKline(params).then((data) => {
         res.end(JSON.stringify({
@@ -226,7 +227,7 @@ router.get('/api/v1/get_kline', function (req, res, next) {
 /**
  * 获取深度
  */
-router.get('/api/market/depth', function (req, res, next) {
+router.get(path + '/market/depth', function (req, res, next) {
     let params = req.query;
     hbsdk.getDepth(params).then((data) => {
         res.end(JSON.stringify({

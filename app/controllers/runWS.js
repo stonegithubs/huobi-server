@@ -12,7 +12,7 @@ let symbol = {
     base: 'btc'
 }
 async function start() {
-    
+
     // 查最新的价格
     await hbsdk.getKline({
         symbol: 'btcusdt',
@@ -27,7 +27,7 @@ async function start() {
     }).then((data) => {
         global.ethPrice = data[1].close;
     }).catch(console);
-    console.log(global.btcPrice, global.ethPrice)
+
     let precisionData = await hbsdk.getSymbols();
     let pricePrecision = 0;
     let amountPrecision = 0;
@@ -36,18 +36,23 @@ async function start() {
         // price-precision:8
         // quote-currency:"eth"
         if (item['base-currency'] === symbol.base && item['quote-currency'] === symbol.quote) {
-        pricePrecision = item['price-precision'];
-        amountPrecision = item['amount-precision'];
-        return true;
+            pricePrecision = item['price-precision'];
+            amountPrecision = item['amount-precision'];
+            return true;
         }
         return false;
     });
 
     await WS_HUOBI.open().then(function () {
-          // 开始订阅
+        // 开始订阅
         WS_HUOBI.call({
             type: `ws-huobi`,
             value: 'subscribeDepth',
+            symbol: `${symbols}`
+        });
+        WS_HUOBI.call({
+            type: `ws-huobi`,
+            value: 'subscribeTrade',
             symbol: `${symbols}`
         });
         getSameAmount.setConfig({
@@ -56,7 +61,6 @@ async function start() {
             quoteCurrency: symbol.quote
         })
     });
-
 }
 exports.start = start;
 

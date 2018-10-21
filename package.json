@@ -14,6 +14,7 @@
     "debug": "~2.6.9",
     "express": "~4.16.0",
     "http-errors": "~1.6.2",
+    "lodash.findindex": "^4.6.0",
     "lodash.throttle": "^4.1.1",
     "moment": "^2.13.0",
     "morgan": "~1.9.0",
@@ -21,8 +22,6 @@
     "pako": "^1.0.6",
     "redis": "^2.4.2",
     "request": "^2.72.0",
-    "vue": "^2.5.16",
-    "vue-server-renderer": "^2.5.16",
     "ws": "^5.2.0"
   },
   "devDependencies": {

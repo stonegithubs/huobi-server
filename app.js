@@ -5,9 +5,10 @@ var path = require('path');
 var cookieParser = require('cookie-parser');
 var logger = require('morgan');
 var cors = require('cors');
-var api = require('./routes/api');
+var api = require('./app/routes/api');
+var startWS = require('./app/controllers/runWS');
 var app = express();
-const startWS = require('./app/controllers/runWS');
+
 
 process.env.UV_THREADPOOL_SIZE = 128;
 
@@ -18,7 +19,7 @@ app.use(cookieParser());
 app.use(express.static(path.join(__dirname, 'public')));
 
 app.use(cors());
-app.use('/', api);
+app.use('/api', api);
 // catch 404 and forward to error handler
 app.use(function(req, res, next) {
   next(createError(404));
