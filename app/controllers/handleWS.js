@@ -35,7 +35,7 @@ let disTime = 1000 * 10;
 const buyMaxAM = new AbnormalMonitor({config: {disTime: disTime}});
 const sellMaxAM = new AbnormalMonitor({config: {disTime: disTime}});
 // 懒惰任务，1000 * 60 s后不激活自动停止
-const intervalTask = new IntervalTask(1000 * 60);
+const intervalTask = new IntervalTask(1000 * 30);
 
 /**
  * 处理深度数据
