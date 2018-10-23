@@ -2,12 +2,13 @@ const mysql       = require('mysql');
 var mysqlConfig = require('config').get('tencentMysql');
 
 var connection = mysql.createConnection({
-  host     : mysqlConfig.host,
-  user     : mysqlConfig.user,
-  password : mysqlConfig.password,
-  port: mysqlConfig.port || 3306,
-  database : mysqlConfig.database,
-  insecureAuth: true,
+  host                : mysqlConfig.host,
+  user                : mysqlConfig.user,
+  password            : mysqlConfig.password,
+  port                : mysqlConfig.port || 3306,
+  database            : mysqlConfig.database,
+  insecureAuth        : true,
+  useConnectionPooling: true,
 });
  
 connection.connect();
