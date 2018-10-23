@@ -15,7 +15,7 @@ function getPressure(param) {
     return new Promise(function (resolve, reject) {
         connect.query(
             `
-            SELECT amount,price,type,DATE_FORMAT(time,'%Y-%m-%d %H:%i:%s') as time FROM huobi_pressure_zone 
+            SELECT amount,price,type,DATE_FORMAT(time,'%Y-%m-%d %H:%i:%s') as time FROM HUOBI_PRESSURE_ZONE 
             WHERE time >=(NOW() - interval 24 hour)
                 AND symbol = '${param.symbol}'
             `

@@ -102,7 +102,7 @@ const handleDepth = throttle(function (data) {
             type: 'asks_max',
             exchange: exchange,
         }
-         // 买个数/卖个数
+        // 买个数/卖个数
 
         buyMaxAM.speed({
             value: Number(bidsList[1].amount),
@@ -127,7 +127,12 @@ const handleDepth = throttle(function (data) {
         ) {
             intervalTask.stop();
         }
-        if (bidsHistoryStatus[bidsHistoryStatus.length - 1].status !== '横盘' || asksHistoryStatus[asksHistoryStatus.length - 1].status !== '横盘') {
+        if (
+            bidsHistoryStatus[bidsHistoryStatus.length - 1].status !== '横盘'
+            || asksHistoryStatus[asksHistoryStatus.length - 1].status !== '横盘'
+            || Number(buy1.amount) > 10
+            || Number(sell1.amount)
+        ) {
             intervalTask.activate();
         }
         // console.log(bidsHistoryStatus, asksHistoryStatus)
