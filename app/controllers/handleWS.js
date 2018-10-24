@@ -65,52 +65,29 @@ const handleDepth = throttle(function (data) {
         // 取当前时间
         let ts = Date.now()
         let timeUTC = moment(ts).format("YYYY/MM/DD h:mm:ss");
-        // 买1
-        let buy1 = {
-            amount: bidsFirst[1],
-            price: bidsFirst[0],
+        let insertData = {
             symbol: data.symbol,
+            sell_1: aksFirst[1],
+            sell_2: data.tick.asks[1][1],
+            buy_1: bidsFirst[1],
+            buy_2: data.tick.bids[1][1],
+            bids_max_1: bidsList[0].amount,
+            bids_max_2: bidsList[1].amount,
+            asks_max_1: asksList[0].amount,
+            asks_max_2: asksList[1].amount,
+            bids_max_price: [bidsList[0].price, bidsList[1].price].join(','),
+            asks_max_price: [asksList[0].price, asksList[1].price].join(','),
             time: timeUTC,
-            type: 'buy1',
             exchange: exchange,
         }
-        // 卖1
-        let sell1 = {
-            amount: aksFirst[1],
-            price: aksFirst[0],
-            symbol: data.symbol,
-            time: timeUTC,
-            type: 'sell1',
-            exchange: exchange,
-        }
-
-        // 买量最高
-        let bidsMax = {
-            amount: bidsList[1].amount,
-            price: bidsList[0].price,
-            symbol: data.symbol,
-            time: timeUTC,
-            type: 'bids_max',
-            exchange: exchange,
-        }
-        // 卖量最高
-        let asksMax = {
-            amount: asksList[1].amount,
-            price: asksList[0].price,
-            symbol: data.symbol,
-            time: timeUTC,
-            type: 'asks_max',
-            exchange: exchange,
-        }
-        // 买个数/卖个数
 
         buyMaxAM.speed({
-            value: Number(bidsList[1].amount),
+            value: Number(bidsList[0].amount),
             ts
         });
 
         sellMaxAM.speed({
-            value: Number(asksList[1].amount),
+            value: Number(asksList[0].amount),
             ts
         });
         let bidsHistoryStatus = buyMaxAM.historyStatus;
@@ -130,18 +107,15 @@ const handleDepth = throttle(function (data) {
         if (
             bidsHistoryStatus[bidsHistoryStatus.length - 1].status !== '横盘'
             || asksHistoryStatus[asksHistoryStatus.length - 1].status !== '横盘'
-            || Number(buy1.amount) > 10
-            || Number(sell1.amount)
+            || Number(insertData.buy_1) > 10
+            || Number(insertData.sell_1) > 10
         ) {
             intervalTask.activate();
         }
         // console.log(bidsHistoryStatus, asksHistoryStatus)
         // 记录量的幅度
         intervalTask.do(() => {
-            mysqlModel.insert('HUOBI_PRESSURE_ZONE', buy1);
-            mysqlModel.insert('HUOBI_PRESSURE_ZONE', sell1);
-            mysqlModel.insert('HUOBI_PRESSURE_ZONE', bidsMax);
-            mysqlModel.insert('HUOBI_PRESSURE_ZONE', asksMax);
+            mysqlModel.insert('HUOBI_PRESSURE_ZONE', insertData);
         });
     }
 }, 5000, {trailing: false, leading: true});
@@ -222,20 +196,14 @@ const handleTrade = function(data) {
     // 当前时间 > 上一个时间
     if ((ts - preTime)  > disTime) {
         // 记录上一个数据；
-        console.log('记录')
         let time = new Date(Number(tempTradeData[symbol]._time));
-        let sell = tempTradeData[symbol].sell;
-        if (sell) {
-            sell.time = time;
-            sell.amount = sell.amount.toFixed(2);
+        if (tempTradeData[symbol]) {
+            tempTradeData[symbol].time = time;
+            tempTradeData[symbol].buy = tempTradeData[symbol].buy.toFixed(2);
+            tempTradeData[symbol].sell = tempTradeData[symbol].sell.toFixed(2);
+            delete tempTradeData[symbol]._time;
+            mysqlModel.insert('HUOBI_TRADE', tempTradeData[symbol]);
         }
-        let buy = tempTradeData[symbol].buy;
-        if (buy) {
-            buy.time = time;
-            buy.amount = buy.amount.toFixed(2);
-        }
-        mysqlModel.insert('HUOBI_TRADE', buy);
-        mysqlModel.insert('HUOBI_TRADE', sell);
         // 开始一个新数据
         let _tempData =  mergeTradeData(tradeData.data, ts, _price, symbol, exchange);
         if (_tempData) {
@@ -244,21 +212,8 @@ const handleTrade = function(data) {
     } else {
         // 合并数据
         let _tempData = mergeTradeData(tradeData.data, ts, _price, symbol, exchange);
-        if (_tempData.buy !== null) {
-            if (tempTradeData[symbol].buy === null) {
-                tempTradeData[symbol].buy = _tempData.buy;
-            } else {
-                tempTradeData[symbol].buy.amount += _tempData.buy.amount;
-            }
-            
-        }
-        if (_tempData.sell !== null) {
-            if (tempTradeData[symbol].sell === null) {
-                tempTradeData[symbol].sell = _tempData.sell;
-            } else {
-                tempTradeData[symbol].sell.amount += _tempData.sell.amount;
-            }
-        }
+        tempTradeData[symbol].buy += _tempData.buy;
+        tempTradeData[symbol].sell += _tempData.sell;
     }
 }
 
@@ -273,9 +228,11 @@ const handleTrade = function(data) {
  */
 function mergeTradeData(tradeData, _time, _price, symbol, exchange) {
     let _tempData = {
-        buy: null,
-        sell: null,
+        symbol: symbol,
+        buy: 0,
+        sell: 0,
         _time: _time,
+        exchange: exchange
     }
     if (!Array.isArray(tradeData)) {
         console.error('tradeData must be a Array');
@@ -285,16 +242,7 @@ function mergeTradeData(tradeData, _time, _price, symbol, exchange) {
     tradeData.forEach(item => {
         const amount = item.amount * item.price * _price;
         const direction = item.direction;
-        if (_tempData[direction] === null) {
-            _tempData[direction] = {
-                symbol: symbol,
-                type: direction,
-                amount: Number(amount.toFixed(2)),
-                exchange: exchange
-            };
-            return;
-        }
-        _tempData[direction].amount = Number((amount + _tempData[direction].amount).toFixed(2));
+        _tempData[direction] = Number((amount + _tempData[direction]).toFixed(2));
     });
     return _tempData;
 }
