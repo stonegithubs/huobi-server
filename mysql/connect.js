@@ -1,5 +1,5 @@
 const mysql       = require('mysql');
-var mysqlConfig = require('config').get('mysqlLocal');
+var mysqlConfig = require('config').get('tencentMysql');
 
 var connection = mysql.createConnection({
   host                : mysqlConfig.host,
