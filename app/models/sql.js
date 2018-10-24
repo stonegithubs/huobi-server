@@ -15,6 +15,7 @@ exports.HUOBI_PRESSURE_ZONE = `
         
         bids_max_price VARCHAR(45) NOT NULL,
         asks_max_price VARCHAR(45) NOT NULL,
+        price FLOAT(18),
         time DATETIME,
         exchange VARCHAR(15),
         PRIMARY KEY ( id )
@@ -25,9 +26,9 @@ exports.HUOBI_PRESSURE_ZONE = `
 exports.HUOBI_TRADE = `
     CREATE TABLE IF NOT EXISTS HUOBI_TRADE(
         id INT UNSIGNED AUTO_INCREMENT,
-        buy FLOAT(20) NOT NULL,
-        sell FLOAT(20) NOT NULL, 
-        exchange VARCHAR(15),
+        buy FLOAT(12) NOT NULL,
+        sell FLOAT(12) NOT NULL, 
+        exchange VARCHAR(10),
         symbol VARCHAR(15) NOT NULL,
         time DATETIME,
         PRIMARY KEY ( id )

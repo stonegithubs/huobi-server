@@ -1,16 +1,12 @@
 
-
+const huobiSymbols = require('../utils/huobiSymbols');
 
 let config = {
-	quoteCurrency: 'usdt', // 交易对
-	pricePrecision: 4, // 价格精度
-	amountPrecision: 2, // 量 的精度
 	sortBy: 'sumMoneny',
 	// 有多单时， 总和超过最小价，低于则不显示
 	minSumPrice: 200,
 	// 1单时， 总和超过最小价，低于则不显示
 	minPrice: 1000,
-
 }
 /**
  * 
@@ -26,13 +22,15 @@ function setConfig(newConfig) {
  */
 const getSameAmount = function (data, {
 	type = '',
-	pricePrecision = config.pricePrecision,
-	amountPrecision = config.amountPrecision,
-	quoteCurrency = config.quoteCurrency,
+	symbol = '',
+	sortBy = config.sortBy
 } = {}) {
 	// data = data.slice(0, 400)
 	let countTemp = {};
-
+	// 拿价格，量的小数位
+	let symbolInfo = huobiSymbols.getSymbolInfo(symbol);
+	let amountPrecision = symbolInfo['amount-precision'];
+	let pricePrecision = symbolInfo['price-precision'];
 	// 统计重复次数
 	for (let i = 0; i < data.length; i++) {
 		let count = data[i][1];
@@ -65,10 +63,10 @@ const getSameAmount = function (data, {
 		let sumDollar = sumPrice;
 
 		// 转换成美元价格
-		if (quoteCurrency === 'btc') {
-			sumDollar = sumPrice * window.btcPrice;
-		} else if (quoteCurrency === 'eth') {
-			sumDollar = sumPrice * window.ethPrice;
+		if (symbol.endsWith('btc')) {
+			sumDollar = sumPrice * global.btcPrice;
+		} else if (symbol.endsWith('eth')) {
+			sumDollar = sumPrice * global.ethPrice;
 		}
 		if ((count > 1 && sumDollar > config.minSumPrice) || (sumDollar > config.minPrice)) {
 			let data = {
@@ -83,13 +81,13 @@ const getSameAmount = function (data, {
 			arr.push(data);
 		}
 	}
-	if (type === 'asks' && config.sortBy === 'price') {
+	if (type === 'asks' && sortBy === 'price') {
 		return arr.sort(function (a, b) {
-			return a[config.sortBy] - b[config.sortBy]
+			return a[sortBy] - b[sortBy]
 		});
 	}
 	return arr.sort(function (a, b) {
-		return b[config.sortBy] - a[config.sortBy]
+		return b[sortBy] - a[sortBy]
 	});
 }
 getSameAmount.setConfig = setConfig;

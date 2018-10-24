@@ -4,6 +4,7 @@ const getSameAmount = require('../utils/getSameAmount');
 const getPriceIndex = require('../utils/getPriceIndex');
 const AbnormalMonitor = require('../utils/AbnormalMonitor');
 const IntervalTask = require('../utils/IntervalTask');
+const huobiSymbols = require('../utils/huobiSymbols');
 const mysqlModel = require('../models/mysql');
 
 let exchange = 'huobi';
@@ -43,13 +44,17 @@ const intervalTask = new IntervalTask(1000 * 30);
 const handleDepth = throttle(function (data) {
 
     if (data.tick && data.symbol === 'btcusdt') {
-        let bidsFirst = data.tick.bids[0];
+        let bids1 = data.tick.bids[0];
+        let bids2 = data.tick.bids[1];
         let bidsList = getSameAmount(data.tick.bids, {
-            type: 'bids'
+            type: 'bids',
+            symbol: data.symbol,
         });
-        let aksFirst = data.tick.asks[0];
+        let aks1 = data.tick.asks[0];
+        let aks2 = data.tick.asks[1];
         let asksList = getSameAmount(data.tick.asks, {
-            type: 'asks'
+            type: 'asks',
+            symbol: data.symbol,
         });
         // [ 6584.05, 0.0004 ]
         // [ { count: 1,
@@ -60,21 +65,28 @@ const handleDepth = throttle(function (data) {
         //     price: '6650.95',
         //     prices: [ 6650.95 ] }
         // ]
-        // console.log(111, aksFirst, asksList);
+        // console.log(111, aks1, asksList);
 
         // 取当前时间
         let ts = Date.now()
         let timeUTC = moment(ts).format("YYYY/MM/DD h:mm:ss");
+
+        let symbolInfo = huobiSymbols.getSymbolInfo(data.symbol);
+        let amountPrecision = symbolInfo['amount-precision'];
+        let pricePrecision = symbolInfo['price-precision'];
+
+        let currentPrice = (bids1[0] + aks1[0]) / 2;
         let insertData = {
             symbol: data.symbol,
-            sell_1: aksFirst[1],
-            sell_2: data.tick.asks[1][1],
-            buy_1: bidsFirst[1],
-            buy_2: data.tick.bids[1][1],
-            bids_max_1: bidsList[0].amount,
-            bids_max_2: bidsList[1].amount,
-            asks_max_1: asksList[0].amount,
-            asks_max_2: asksList[1].amount,
+            sell_1: (aks1[1] * aks1[0]).toFixed(1),
+            sell_2: (aks2[1] * aks2[0]).toFixed(1),
+            buy_1: (bids1[1] * bids1[0]).toFixed(1),
+            buy_2: (bids2[1] * bids2[0]).toFixed(1),
+            price: currentPrice > pricePrecision ? currentPrice.toFixed(pricePrecision) : currentPrice,
+            bids_max_1: bidsList[0].sumDollar,
+            bids_max_2: bidsList[1].sumDollar,
+            asks_max_1: asksList[0].sumDollar,
+            asks_max_2: asksList[1].sumDollar,
             bids_max_price: [bidsList[0].price, bidsList[1].price].join(','),
             asks_max_price: [asksList[0].price, asksList[1].price].join(','),
             time: timeUTC,
@@ -82,12 +94,12 @@ const handleDepth = throttle(function (data) {
         }
 
         buyMaxAM.speed({
-            value: Number(bidsList[0].amount),
+            value: Number(bidsList[0].sumDollar),
             ts
         });
 
         sellMaxAM.speed({
-            value: Number(asksList[0].amount),
+            value: Number(asksList[0].sumDollar),
             ts
         });
         let bidsHistoryStatus = buyMaxAM.historyStatus;
@@ -107,8 +119,8 @@ const handleDepth = throttle(function (data) {
         if (
             bidsHistoryStatus[bidsHistoryStatus.length - 1].status !== '横盘'
             || asksHistoryStatus[asksHistoryStatus.length - 1].status !== '横盘'
-            || Number(insertData.buy_1) > 10
-            || Number(insertData.sell_1) > 10
+            || Number(insertData.buy_1) > (5 * btcPrice)
+            || Number(insertData.sell_1) > (5 * btcPrice)
         ) {
             intervalTask.activate();
         }
