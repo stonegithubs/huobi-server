@@ -20,7 +20,7 @@ router.get('/chart/amount', function (req, res, next) {
             status: 'ok'
         }));
     }).catch(err => {
-        console.log(err)
+        console.log(err);
         res.end(sendJSON({
             msg: err,
             status: 'error'
@@ -28,5 +28,21 @@ router.get('/chart/amount', function (req, res, next) {
         next();
     });
 });
-
+router.get('/chart/trade', function (req, res, next) {
+    const param = req.query;
+    chartslModels.getTrade(param).then((mysqlRes, fields) => {
+        res.end(sendJSON({
+            data: mysqlRes,
+            fields: fields,
+            status: 'ok'
+        }));
+    }).catch(err => {
+        console.log(err);
+        res.end(sendJSON({
+            msg: err,
+            status: 'error'
+        }));
+        next();
+    });
+});
 module.exports = router;
