@@ -127,7 +127,7 @@ const handleDepth = throttle(function (data) {
         // console.log(bidsHistoryStatus, asksHistoryStatus)
         // 记录量的幅度
         intervalTask.do(() => {
-            mysqlModel.insert('HUOBI_PRESSURE_ZONE', insertData);
+            // mysqlModel.insert('HUOBI_PRESSURE_ZONE', insertData);
         });
     }
 }, 5000, {trailing: false, leading: true});
@@ -214,7 +214,7 @@ const handleTrade = function(data) {
             tempTradeData[symbol].buy = tempTradeData[symbol].buy.toFixed(2);
             tempTradeData[symbol].sell = tempTradeData[symbol].sell.toFixed(2);
             delete tempTradeData[symbol]._time;
-            mysqlModel.insert('HUOBI_TRADE', tempTradeData[symbol]);
+            // mysqlModel.insert('HUOBI_TRADE', tempTradeData[symbol]);
         }
         // 开始一个新数据
         let _tempData =  mergeTradeData(tradeData.data, ts, _price, symbol, exchange);
