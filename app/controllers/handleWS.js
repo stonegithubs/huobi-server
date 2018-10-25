@@ -33,10 +33,10 @@ module.exports = handle;
 
 let disTime = 1000 * 10;
 // 状态异常监控
-const buyMaxAM = new AbnormalMonitor({config: {disTime: disTime}});
-const sellMaxAM = new AbnormalMonitor({config: {disTime: disTime}});
+const buyMaxAM = new AbnormalMonitor({config: {disTime: disTime, recordMaxLen: 4}});
+const sellMaxAM = new AbnormalMonitor({config: {disTime: disTime, recordMaxLen: 4}});
 // 懒惰任务，1000 * 60 s后不激活自动停止
-const intervalTask = new IntervalTask(1000 * 30);
+const intervalTask = new IntervalTask(1000 * 10);
 
 /**
  * 处理深度数据
@@ -69,8 +69,8 @@ const handleDepth = throttle(function (data) {
 
         // 取当前时间
         let ts = Date.now()
-        let timeUTC = moment(ts).format("YYYY/MM/DD h:mm:ss");
-
+        let timeUTC = moment(ts).format("YYYY/MM/DD H:mm:ss");
+        console.log(moment(ts).format("YYYY/MM/DD h:mm:ss"), moment(ts).format("YYYY/MM/DD H:mm:ss"))
         let symbolInfo = huobiSymbols.getSymbolInfo(data.symbol);
         let amountPrecision = symbolInfo['amount-precision'];
         let pricePrecision = symbolInfo['price-precision'];
@@ -89,7 +89,7 @@ const handleDepth = throttle(function (data) {
             asks_max_2: asksList[1].sumDollar,
             bids_max_price: [bidsList[0].price, bidsList[1].price].join(','),
             asks_max_price: [asksList[0].price, asksList[1].price].join(','),
-            time: timeUTC,
+            time: new Date(ts),
             exchange: exchange,
         }
 
@@ -116,6 +116,7 @@ const handleDepth = throttle(function (data) {
         ) {
             intervalTask.stop();
         }
+        console.log(asksHistoryStatus)
         if (
             bidsHistoryStatus[bidsHistoryStatus.length - 1].status !== '横盘'
             || asksHistoryStatus[asksHistoryStatus.length - 1].status !== '横盘'
@@ -127,7 +128,7 @@ const handleDepth = throttle(function (data) {
         // console.log(bidsHistoryStatus, asksHistoryStatus)
         // 记录量的幅度
         intervalTask.do(() => {
-            // mysqlModel.insert('HUOBI_PRESSURE_ZONE', insertData);
+            mysqlModel.insert('HUOBI_PRESSURE_ZONE', insertData);
         });
     }
 }, 5000, {trailing: false, leading: true});
@@ -214,7 +215,7 @@ const handleTrade = function(data) {
             tempTradeData[symbol].buy = tempTradeData[symbol].buy.toFixed(2);
             tempTradeData[symbol].sell = tempTradeData[symbol].sell.toFixed(2);
             delete tempTradeData[symbol]._time;
-            // mysqlModel.insert('HUOBI_TRADE', tempTradeData[symbol]);
+            mysqlModel.insert('HUOBI_TRADE', tempTradeData[symbol]);
         }
         // 开始一个新数据
         let _tempData =  mergeTradeData(tradeData.data, ts, _price, symbol, exchange);
