@@ -94,7 +94,7 @@ class AbnormalMonitor {
                 status: '横盘',
                 strength: 0,
                 ts: ts,
-                timeUTC: moment(ts).format("YYYY/MM/DD h:mm:ss"),
+                timeUTC: moment(ts).format("YYYY/MM/DD H:mm:ss"),
                 value: data.value,
             });
              // 根据时间差算出下一个时间的节点，默认为5min后
@@ -119,7 +119,7 @@ class AbnormalMonitor {
                 // 强度
                 strength: (disValue / this._preTrade.value * 100).toFixed(3),
                 ts: ts,
-                timeUTC: moment(ts).format("YYYY/MM/DD h:mm:ss"),
+                timeUTC: moment(ts).format("YYYY/MM/DD H:mm:ss"),
                 value: data.value,
             });
              // 根据时间差算出下一个时间的节点，默认为5min后
@@ -135,7 +135,7 @@ class AbnormalMonitor {
      * @param {Object} status 
      */
     pushSatus(status) {
-        if (this.historyStatus.length > this.recordMaxLen) {
+        if (this.historyStatus.length > (this.recordMaxLen - 1)) {
             this.historyStatus.shift();
         }
         this.historyStatus.push(status);

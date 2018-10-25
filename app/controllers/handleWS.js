@@ -3,7 +3,7 @@ const moment = require('moment');
 const getSameAmount = require('../utils/getSameAmount');
 const getPriceIndex = require('../utils/getPriceIndex');
 const AbnormalMonitor = require('../utils/AbnormalMonitor');
-const IntervalTask = require('../utils/IntervalTask');
+// const IntervalTask = require('../utils/IntervalTask');
 const huobiSymbols = require('../utils/huobiSymbols');
 const mysqlModel = require('../models/mysql');
 
@@ -30,13 +30,14 @@ function handle(data) {
 
 module.exports = handle;
 
-
+/* ----------------------------------------------------------------------------- */
 let disTime = 1000 * 10;
 // 状态异常监控
-const buyMaxAM = new AbnormalMonitor({config: {disTime: disTime, recordMaxLen: 4}});
-const sellMaxAM = new AbnormalMonitor({config: {disTime: disTime, recordMaxLen: 4}});
+const buyMaxAM = new AbnormalMonitor({config: {disTime: disTime, recordMaxLen: 6}});
+const sellMaxAM = new AbnormalMonitor({config: {disTime: disTime, recordMaxLen: 6}});
+
 // 懒惰任务，1000 * 60 s后不激活自动停止
-const intervalTask = new IntervalTask(1000 * 10);
+// const intervalTask = new IntervalTask(1000 * 10);
 
 /**
  * 处理深度数据
@@ -68,9 +69,7 @@ const handleDepth = throttle(function (data) {
         // console.log(111, aks1, asksList);
 
         // 取当前时间
-        let ts = Date.now()
-        let timeUTC = moment(ts).format("YYYY/MM/DD H:mm:ss");
-        console.log(moment(ts).format("YYYY/MM/DD h:mm:ss"), moment(ts).format("YYYY/MM/DD H:mm:ss"))
+        let ts = Date.now();
         let symbolInfo = huobiSymbols.getSymbolInfo(data.symbol);
         let amountPrecision = symbolInfo['amount-precision'];
         let pricePrecision = symbolInfo['price-precision'];
@@ -106,7 +105,6 @@ const handleDepth = throttle(function (data) {
         let asksHistoryStatus = sellMaxAM.historyStatus;
         let buyStatus = getStatusNum(bidsHistoryStatus);
         let sellStatus = getStatusNum(asksHistoryStatus);
-
         if (
             bidsHistoryStatus.length > 2
             && buyStatus['涨'] === 0
@@ -114,22 +112,21 @@ const handleDepth = throttle(function (data) {
             && sellStatus['跌'] === 0
             && sellStatus['跌'] === 0
         ) {
-            intervalTask.stop();
+            write(insertData);
         }
-        console.log(asksHistoryStatus)
+        
         if (
-            bidsHistoryStatus[bidsHistoryStatus.length - 1].status !== '横盘'
+            bidsHistoryStatus.length === 1
+            || bidsHistoryStatus[bidsHistoryStatus.length - 1].status !== '横盘'
             || asksHistoryStatus[asksHistoryStatus.length - 1].status !== '横盘'
             || Number(insertData.buy_1) > (5 * btcPrice)
             || Number(insertData.sell_1) > (5 * btcPrice)
         ) {
-            intervalTask.activate();
-        }
-        // console.log(bidsHistoryStatus, asksHistoryStatus)
-        // 记录量的幅度
-        intervalTask.do(() => {
             mysqlModel.insert('HUOBI_PRESSURE_ZONE', insertData);
-        });
+        }
+
+        // console.log(bidsHistoryStatus, asksHistoryStatus)
+        
     }
 }, 5000, {trailing: false, leading: true});
 
@@ -161,6 +158,11 @@ function getStatusNum(status) {
     return res;
 }
 
+const write = throttle(function(insertData) {
+    mysqlModel.insert('HUOBI_PRESSURE_ZONE', insertData);
+}, 1000 * 60 * 5, {trailing: false, leading: true});
+
+/* -------------------------------------------------------- */
 let tempTradeData = {};
 /**
  * 处理交易数据
