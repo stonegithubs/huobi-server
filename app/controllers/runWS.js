@@ -36,12 +36,14 @@ async function start() {
         WS_HUOBI.call({
             type: `ws-huobi`,
             value: 'subscribeDepth',
-            symbol: `${symbols}`
+            symbol: `${symbols}`,
+            from: 'server'
         });
         WS_HUOBI.call({
             type: `ws-huobi`,
             value: 'subscribeTrade',
-            symbol: `${symbols}`
+            symbol: `${symbols}`,
+            from: 'server'
         });
     });
 }
