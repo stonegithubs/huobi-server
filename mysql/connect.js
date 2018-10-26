@@ -14,9 +14,9 @@ var connection = mysql.createConnection(config);
  
 connection.connect();
 connection.on('error', function(err) {
-  console.log('connection:', err.code);
-  connection = mysql.createConnection(config);
-  connection.connect();
+  connection.end(() => {
+    connection.connect();
+  });
 });
 
 function query (sql, params) {
