@@ -73,8 +73,6 @@ exports.delTable = delTable;
  */
 function insert(tableName = 'HUOBI_DEPTH', param) {
     return new Promise(function (resolve, reject) {
-        resolve({});
-        return;
         // let param = {
         //   symbol: '1.symbol',
         //   time: new Date(),
