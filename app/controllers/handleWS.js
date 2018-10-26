@@ -200,7 +200,6 @@ const handleTrade = function(data) {
     // 先找缓存的数据是否存在
     if (tempTradeData[symbol] === undefined) {
         let _tempData =  mergeTradeData(tradeData.data, ts, _price, symbol, exchange);
-        console.log(_tempData)
         if (_tempData) {
             tempTradeData[symbol] =_tempData;
         }

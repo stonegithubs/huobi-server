@@ -7,6 +7,7 @@ let between24in = [
     moment(Date.now() - (24 * 60 * 60 * 1000)).format("YYYY/MM/DD H:mm:ss"),
     moment().format("YYYY/MM/DD H:mm:ss")
 ];
+console.log(between24in)
 /**
  * 获取压力位 以amount 体现
  * @param {string} param.symbol
