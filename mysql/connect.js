@@ -1,7 +1,7 @@
 const mysql       = require('mysql');
 var mysqlConfig = require('config').get('tencentMysql');
 
-var connection = mysql.createConnection({
+let config = {
   host                : mysqlConfig.host,
   user                : mysqlConfig.user,
   password            : mysqlConfig.password,
@@ -9,11 +9,14 @@ var connection = mysql.createConnection({
   database            : mysqlConfig.database,
   insecureAuth        : true,
   useConnectionPooling: true,
-});
+};
+var connection = mysql.createConnection(config);
  
 connection.connect();
 connection.on('error', function(err) {
   console.log('connection:', err.code);
+  connection = mysql.createConnection(config);
+  connection.connect();
 });
 
 function query (sql, params) {
