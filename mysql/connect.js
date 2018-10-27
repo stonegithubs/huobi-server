@@ -14,19 +14,21 @@ var connection = mysql.createConnection(config);
  
 connection.connect();
 
-function err(err) {
+function handleErr(err) {
   connection.end(() => {
     console.log('connection:', err);
+    connection = mysql.createConnection(config);
     connection.connect();
-    connection.on('error', err);
+    connection.on('error', handleErr);
   });
 }
-connection.on('error', err);
+connection.on('error', handleErr);
 
 function query (sql, params) {
   return new Promise((resove, reject) => {
     connection.query(sql, params, function (error, results, fields) {
       if (error) {
+        handleErr();
         reject(error);
         return;
       };
