@@ -64,7 +64,6 @@ function getTrade({
     exchange = 'huobi'
 } = {}) {
     return new Promise(function (resolve, reject) {
-        console.log(time)
         connect.query(
             `
             SELECT

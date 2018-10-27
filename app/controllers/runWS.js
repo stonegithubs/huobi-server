@@ -45,6 +45,12 @@ async function start() {
             symbol: `${symbols}`,
             from: 'server'
         });
+        WS_HUOBI.call({
+            type: `ws-huobi`,
+            value: 'subscribeKline',
+            symbol: `${symbols}`,
+            from: 'server'
+        });
     });
 }
 exports.start = start;

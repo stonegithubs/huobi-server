@@ -6,7 +6,7 @@ const AbnormalMonitor = require('../utils/AbnormalMonitor');
 // const IntervalTask = require('../utils/IntervalTask');
 const huobiSymbols = require('../utils/huobiSymbols');
 const mysqlModel = require('../models/mysql');
-
+const WS_SERVER = require('../../lib/ws-server');
 let exchange = 'huobi';
 
 /* 处理返回的数据 */
@@ -16,6 +16,12 @@ function handle(data) {
             handleDepth(data);
             break;
         case 'kline':
+            WS_SERVER.broadcast({
+                form: 'WS_HUOBI',
+                type: 'kline',
+                symbol: data.symbol,
+                kline: data.kline
+            });
             // broadcast(WS_SERVER, {
             //     type: 'WS_HUOBI',
             //     kline: data.tick,
@@ -56,6 +62,18 @@ const handleDepth = throttle(function (data) {
         let asksList = getSameAmount(data.tick.asks, {
             type: 'asks',
             symbol: data.symbol,
+        });
+        WS_SERVER.broadcast({
+            form: 'WS_HUOBI',
+            type: 'depth',
+            symbol: data.symbol,
+            data: {
+                bidsList,
+                asksList,
+                aks1,
+                bids1,
+                tick: data.tick,
+            }
         });
         // [ 6584.05, 0.0004 ]
         // [ { count: 1,
