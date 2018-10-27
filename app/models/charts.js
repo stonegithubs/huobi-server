@@ -77,7 +77,6 @@ function getTrade({
                 AND \`exchange\` = '${exchange}'
             `
         ).then((mysqlRes, fields) => {
-            console.log(mysqlRes)
             resolve(mysqlRes, fields);
         }).catch((err) => {
             console.log(err);
