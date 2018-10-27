@@ -13,11 +13,14 @@ let config = {
 var connection = mysql.createConnection(config);
  
 connection.connect();
-connection.on('error', function(err) {
+
+function err(err) {
   connection.end(() => {
     connection.connect();
+    connection.on('error', err);
   });
-});
+}
+connection.on('error', err);
 
 function query (sql, params) {
   return new Promise((resove, reject) => {
