@@ -16,6 +16,7 @@ connection.connect();
 
 function err(err) {
   connection.end(() => {
+    console.log('connection:', err);
     connection.connect();
     connection.on('error', err);
   });
