@@ -3,31 +3,46 @@ const connect = require('../../mysql/connect');
 let sql = require('./sql');
 
 
-let between24in = [
-    moment(Date.now() - (24 * 60 * 60 * 1000)).format("YYYY/MM/DD H:mm:ss"),
-    moment().format("YYYY/MM/DD H:mm:ss")
-];
+/**
+ * 获取24小时内的数据
+ * @return {Date[]}
+ */
+function getInterval24() {
+    return [
+        moment(Date.now() - (24 * 60 * 60 * 1000)).format("YYYY/MM/DD H:mm:ss"),
+        moment().format("YYYY/MM/DD H:mm:ss")
+    ]
+}
+exports.getInterval24 = getInterval24;
 
 /**
  * 获取压力位 以amount 体现
  * @param {string} param.symbol
  * @return {Promise}
  */
-function getPressure(param) {
-    if (!param.symbol) {
-        reject(new Error('param error'));
-    }
+function getPressure({
+    symbol = 'btcusdt',
+    time = getInterval24(),
+    exchange = 'huobi'
+} = {}) {
     return new Promise(function (resolve, reject) {
         connect.query(
             `
             SELECT
-                *,
+                bids_max_1,
+                asks_max_1,
+                sell_1,
+                buy_1,
+                bids_max_price,
+                asks_max_price,
+                price,
                 DATE_FORMAT(time,'%Y/%m/%d %H:%i:%s') as time 
             FROM
                 HUOBI_PRESSURE_ZONE 
             WHERE
-                time >=(NOW() - interval 24 hour)
-                AND symbol = '${param.symbol}'
+                time BETWEEN '${time[0]}' AND '${time[1]}'
+                AND symbol = '${symbol}'
+                AND \`exchange\` = '${exchange}'
             `
         ).then((mysqlRes, fields) => {
             resolve(mysqlRes, fields);
@@ -45,10 +60,11 @@ exports.getPressure = getPressure;
  */
 function getTrade({
     symbol = 'btcusdt',
-    time = between24in,
+    time = getInterval24(),
     exchange = 'huobi'
 } = {}) {
     return new Promise(function (resolve, reject) {
+        console.log(time)
         connect.query(
             `
             SELECT
@@ -62,6 +78,7 @@ function getTrade({
                 AND \`exchange\` = '${exchange}'
             `
         ).then((mysqlRes, fields) => {
+            console.log(mysqlRes)
             resolve(mysqlRes, fields);
         }).catch((err) => {
             console.log(err);

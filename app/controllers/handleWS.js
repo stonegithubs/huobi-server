@@ -172,7 +172,7 @@ const handleTrade = function(data) {
     if (!data.trade) {
         return;
     }
-    // a = {
+    // data.trade = {
     //     id: 25385409501,
     //     ts: 1540131649981,
     //     data: [
@@ -185,7 +185,6 @@ const handleTrade = function(data) {
     //         }
     //     ]
     // }
-      
     const tradeData = data.trade;
     let symbol = data.symbol;
     const ts = tradeData.ts;
