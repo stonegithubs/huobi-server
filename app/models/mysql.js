@@ -18,7 +18,6 @@ function init() {
             createTable('HUOBI_PRESSURE_ZONE');
         }
         index = findIndex(mysqlRes, (o) => o.Tables_in_huobi.toLowerCase() == 'huobi_trade');
-        console.log(index)
         if (index === -1) {
             createTable('HUOBI_TRADE').catch(console.err);
         }

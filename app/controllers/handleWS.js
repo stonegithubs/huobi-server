@@ -140,7 +140,14 @@ const handleDepth = throttle(function (data) {
             || Number(insertData.buy_1) > (5 * btcPrice)
             || Number(insertData.sell_1) > (5 * btcPrice)
         ) {
-            mysqlModel.insert('HUOBI_PRESSURE_ZONE', insertData);
+            // console.log(
+            //     bidsHistoryStatus.length,
+            //     bidsHistoryStatus[bidsHistoryStatus.length - 1].status,
+            //     asksHistoryStatus[asksHistoryStatus.length - 1].status,
+            //     Number(insertData.buy_1) > (5 * btcPrice),
+            //     Number(insertData.sell_1) > (5 * btcPrice)
+            // )
+            write2(insertData);
         }
 
         // console.log(bidsHistoryStatus, asksHistoryStatus)
@@ -180,6 +187,9 @@ const write = throttle(function(insertData) {
     mysqlModel.insert('HUOBI_PRESSURE_ZONE', insertData);
 }, 1000 * 60 * 5, {trailing: false, leading: true});
 
+const write2 = throttle(function(insertData) {
+    mysqlModel.insert('HUOBI_PRESSURE_ZONE', insertData);
+}, 1000 * 20, {trailing: false, leading: true});
 /* -------------------------------------------------------- */
 let tempTradeData = {};
 /**
@@ -217,7 +227,6 @@ const handleTrade = function(data) {
     // 先找缓存的数据是否存在
     if (tempTradeData[symbol] === undefined) {
         let _tempData =  mergeTradeData(tradeData.data, ts, _price, symbol, exchange);
-        console.log(_tempData)
         if (_tempData) {
             tempTradeData[symbol] =_tempData;
         }
