@@ -17,7 +17,7 @@ connection.connect();
 function handleErr(err) {
   connection.end(() => {
     console.log('connection:', err);
-    connection = mysql.createConnection(config);
+    // connection = mysql.createConnection(config);
     connection.connect();
     connection.on('error', handleErr);
   });
