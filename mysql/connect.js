@@ -1,5 +1,8 @@
 const mysql       = require('mysql');
-var mysqlConfig = require('config').get('tencentMysql');
+var appConfig = require('config');
+const isDev = process.env.NODE_ENV === 'development';
+
+const mysqlConfig = appConfig.get(isDev ? 'mysqlLocal' : 'tencentMysql');
 
 let config = {
   host                : mysqlConfig.host,
