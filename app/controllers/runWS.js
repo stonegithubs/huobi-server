@@ -1,9 +1,10 @@
 const WS_HUOBI = require('../../lib/ws-huobi');
+const WS_BINANCE = require('../../lib/ws-binance');
 const hbsdk = require('../../lib/sdk/hbsdk');
 const huobiSymbols = require('../utils/huobiSymbols');
 // 单位为usdt
-global.ethPrice = 466;
-global.btcPrice = 8000;
+global.ethPrice = 200;
+global.btcPrice = 6300;
 
 let symbols = 'btcusdt';
 let quoteCurrency = '$';
@@ -15,7 +16,7 @@ let symbol = {
 async function start() {
 
     // 查最新的价格
-    await hbsdk.getKline({
+    hbsdk.getKline({
         symbol: 'btcusdt',
         period: '5min',
     }).then((data) => {
@@ -52,6 +53,7 @@ async function start() {
             from: 'server'
         });
     });
+    // await WS_BINANCE.open();
 }
 exports.start = start;
 

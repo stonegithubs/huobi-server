@@ -1,6 +1,6 @@
 const mysql       = require('mysql');
 var appConfig = require('config');
-const isDev = process.env.NODE_ENV === 'development';
+const isDev = process.env.NODE_ENV !== 'production';
 
 const mysqlConfig = appConfig.get(isDev ? 'mysqlLocal' : 'tencentMysql');
 
