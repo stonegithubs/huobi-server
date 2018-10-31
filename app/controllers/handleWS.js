@@ -145,7 +145,6 @@ const handleDepth = throttle(function (data) {
             //     Number(insertData.buy_1) > (5 * btcPrice),
             //     Number(insertData.sell_1) > (5 * btcPrice)
             // )
-            console.log(bidsHistoryStatus, asksHistoryStatus)
             write2(insertData);
         }
 
@@ -184,7 +183,7 @@ function getStatusNum(status) {
 
 const write = throttle(function(insertData) {
     mysqlModel.insert('HUOBI_PRESSURE_ZONE', insertData);
-}, 1000 * 60 * 10, {trailing: false, leading: true});
+}, 1000 * 60 * 6, {trailing: false, leading: true});
 
 const write2 = throttle(function(insertData) {
     mysqlModel.insert('HUOBI_PRESSURE_ZONE', insertData);
