@@ -131,9 +131,7 @@ const handleDepth = throttle(function (data) {
             && sellStatus['跌'] === 0
         ) {
             write(insertData);
-        }
-        
-        if (
+        } else if (
             bidsHistoryStatus.length === 1
             || bidsHistoryStatus[bidsHistoryStatus.length - 1].status !== '横盘'
             || asksHistoryStatus[asksHistoryStatus.length - 1].status !== '横盘'
@@ -147,6 +145,7 @@ const handleDepth = throttle(function (data) {
             //     Number(insertData.buy_1) > (5 * btcPrice),
             //     Number(insertData.sell_1) > (5 * btcPrice)
             // )
+            console.log(bidsHistoryStatus, asksHistoryStatus)
             write2(insertData);
         }
 
@@ -185,7 +184,7 @@ function getStatusNum(status) {
 
 const write = throttle(function(insertData) {
     mysqlModel.insert('HUOBI_PRESSURE_ZONE', insertData);
-}, 1000 * 60 * 5, {trailing: false, leading: true});
+}, 1000 * 60 * 10, {trailing: false, leading: true});
 
 const write2 = throttle(function(insertData) {
     mysqlModel.insert('HUOBI_PRESSURE_ZONE', insertData);

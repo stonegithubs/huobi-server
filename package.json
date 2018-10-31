@@ -3,9 +3,9 @@
   "version": "0.0.0",
   "private": true,
   "scripts": {
-    "start": "node ./bin/www",
+    "start": "cross-env NODE_ENV=development node ./bin/www",
     "dev": "npm run start",
-    "prod": "npm run start",
+    "prod": "NODE_ENV=production npm run start cross-env",
     "pm2:dev": "pm2 start processes.json --env development",
     "pm2:prod": "pm2 start processes.json --env production"
   },
@@ -28,6 +28,7 @@
     "ws": "^5.2.0"
   },
   "devDependencies": {
-    "config": "^1.30.0"
+    "config": "^1.30.0",
+    "cross-env": "^5.2.0"
   }
 }
