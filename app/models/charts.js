@@ -67,7 +67,10 @@ function getTrade({
         connect.query(
             `
             SELECT
-                *,
+                buy,
+                sell,
+                symbol,
+                exchange,
                 UNIX_TIMESTAMP(time) as time 
             FROM
                 HUOBI_TRADE 
