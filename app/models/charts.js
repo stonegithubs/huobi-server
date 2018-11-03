@@ -36,7 +36,7 @@ function getPressure({
                 bids_max_price,
                 asks_max_price,
                 price,
-                time
+                DATE_FORMAT(time,'%Y/%m/%d %H:%i:%s') as time 
             FROM
                 HUOBI_PRESSURE_ZONE 
             WHERE
@@ -71,7 +71,7 @@ function getTrade({
                 sell,
                 symbol,
                 exchange,
-                time
+                DATE_FORMAT(time,'%Y/%m/%d %H:%i:%s') as time 
             FROM
                 HUOBI_TRADE 
             WHERE
