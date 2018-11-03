@@ -71,7 +71,7 @@ function getTrade({
                 sell,
                 symbol,
                 exchange,
-                DATE_FORMAT(time,'%Y/%m/%d %H:%i:%s') as time 
+                DATE_FORMAT(time,'%Y/%m/%d %H:%i:%s') as time  
             FROM
                 HUOBI_TRADE 
             WHERE
