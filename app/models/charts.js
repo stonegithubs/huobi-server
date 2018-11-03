@@ -36,7 +36,7 @@ function getPressure({
                 bids_max_price,
                 asks_max_price,
                 price,
-                UNIX_TIMESTAMP(time) as time 
+                time
             FROM
                 HUOBI_PRESSURE_ZONE 
             WHERE
@@ -71,7 +71,7 @@ function getTrade({
                 sell,
                 symbol,
                 exchange,
-                UNIX_TIMESTAMP(time) as time 
+                time
             FROM
                 HUOBI_TRADE 
             WHERE
