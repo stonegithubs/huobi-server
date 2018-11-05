@@ -50,7 +50,7 @@ const sellMaxAM = new AbnormalMonitor({config: {disTime: disTime, recordMaxLen: 
  */
 const handleDepth = throttle(function (data) {
 
-    if (data.tick && data.symbol === 'btcusdt') {
+    if (data.tick && data.symbol) {
         let bids1 = data.tick.bids[0];
         let bids2 = data.tick.bids[1];
         let bidsList = getSameAmount(data.tick.bids, {
@@ -217,9 +217,9 @@ const handleTrade = function(data) {
     // 价格系数， 价格换算成usdt ，如果交易对是btc， 要*btc的usdt价格
     const _price = getPriceIndex(symbol);
     // 时间截取取  8位作为参考, 大概是1分40s之间的交易会汇总(15320829)
-    const _time = String(tradeData.ts).substring(0, 8);
+    // const _time = String(tradeData.ts).substring(0, 8);
     // 时间填充0补齐13位数 -> 15320829 0000000
-    const _timeToStringDate = _time.padEnd(13, '0');
+    // const _timeToStringDate = _time.padEnd(13, '0');
     // 2分钟合并一次交易
     let disTime = 2 * 60 * 1000;
     // 先找缓存的数据是否存在
