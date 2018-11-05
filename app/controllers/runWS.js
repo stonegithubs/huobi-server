@@ -6,7 +6,7 @@ const huobiSymbols = require('../utils/huobiSymbols');
 global.ethPrice = 200;
 global.btcPrice = 6480;
 
-const symbols = ['btcusdt', 'ht', 'bch'];
+const symbols = ['btcusdt', 'htusdt', 'bchusdt'];
 const symbol = {
     quote: 'usdt',
     base: 'btc'
