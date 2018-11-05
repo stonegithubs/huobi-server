@@ -4,11 +4,10 @@ const hbsdk = require('../../lib/sdk/hbsdk');
 const huobiSymbols = require('../utils/huobiSymbols');
 // 单位为usdt
 global.ethPrice = 200;
-global.btcPrice = 6300;
+global.btcPrice = 6480;
 
-let symbols = 'btcusdt';
-let quoteCurrency = '$';
-let symbol = {
+const symbols = ['btcusdt', 'ht', 'bch'];
+const symbol = {
     quote: 'usdt',
     base: 'btc'
 }
@@ -33,24 +32,26 @@ async function start() {
     await huobiSymbols.getSymbols();
 
     await WS_HUOBI.open().then(function () {
-        // 开始订阅
-        WS_HUOBI.call({
-            type: `ws-huobi`,
-            value: 'subscribeDepth',
-            symbol: `${symbols}`,
-            from: 'server'
-        });
-        WS_HUOBI.call({
-            type: `ws-huobi`,
-            value: 'subscribeTrade',
-            symbol: `${symbols}`,
-            from: 'server'
-        });
-        WS_HUOBI.call({
-            type: `ws-huobi`,
-            value: 'subscribeKline',
-            symbol: `${symbols}`,
-            from: 'server'
+        symbols.forEach((symbol) => {
+            // 开始订阅
+            WS_HUOBI.call({
+                type: `ws-huobi`,
+                value: 'subscribeDepth',
+                symbol: `${symbol}`,
+                from: 'server'
+            });
+            WS_HUOBI.call({
+                type: `ws-huobi`,
+                value: 'subscribeTrade',
+                symbol: `${symbol}`,
+                from: 'server'
+            });
+            WS_HUOBI.call({
+                type: `ws-huobi`,
+                value: 'subscribeKline',
+                symbol: `${symbol}`,
+                from: 'server'
+            });
         });
     });
     // await WS_BINANCE.open();
