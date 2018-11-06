@@ -135,15 +135,15 @@ const handleDepth = throttle(function (data) {
             bidsHistoryStatus.length === 1
             || bidsHistoryStatus[bidsHistoryStatus.length - 1].status !== '横盘'
             || asksHistoryStatus[asksHistoryStatus.length - 1].status !== '横盘'
-            || Number(insertData.buy_1) > (5 * btcPrice)
-            || Number(insertData.sell_1) > (5 * btcPrice)
+            || Number(insertData.buy_1) > (5 * appConfig.prices.btc)
+            || Number(insertData.sell_1) > (5 * appConfig.prices.btc)
         ) {
             // console.log(
             //     bidsHistoryStatus.length,
             //     bidsHistoryStatus[bidsHistoryStatus.length - 1].status,
             //     asksHistoryStatus[asksHistoryStatus.length - 1].status,
-            //     Number(insertData.buy_1) > (5 * btcPrice),
-            //     Number(insertData.sell_1) > (5 * btcPrice)
+            //     Number(insertData.buy_1) > (5 * appConfig.prices.btc),
+            //     Number(insertData.sell_1) > (5 * appConfig.prices.btc)
             // )
             write2(insertData);
         }
