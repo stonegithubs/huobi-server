@@ -6,7 +6,7 @@
  * @param {number} disTime 处理多长时间
  */
 
-class IntervalTask {
+class LazyTask {
     constructor({disTime}) {
         this.disTime = disTime;
         this.init();

@@ -3,7 +3,7 @@ const moment = require('moment');
 const getSameAmount = require('../utils/getSameAmount');
 const getPriceIndex = require('../utils/getPriceIndex');
 const AbnormalMonitor = require('../utils/AbnormalMonitor');
-// const IntervalTask = require('../utils/IntervalTask');
+// const LazyTask = require('../utils/LazyTask');
 const huobiSymbols = require('../utils/huobiSymbols');
 const mysqlModel = require('../models/mysql');
 const WS_SERVER = require('../../lib/ws-server');
@@ -43,7 +43,7 @@ const buyMaxAM = new AbnormalMonitor({config: {disTime: disTime, recordMaxLen: 6
 const sellMaxAM = new AbnormalMonitor({config: {disTime: disTime, recordMaxLen: 6}});
 
 // 懒惰任务，1000 * 60 s后不激活自动停止
-// const intervalTask = new IntervalTask(1000 * 10);
+// const LazyTask = new LazyTask(1000 * 10);
 
 /**
  * 处理深度数据

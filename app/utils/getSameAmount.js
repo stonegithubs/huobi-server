@@ -64,14 +64,14 @@ const getSameAmount = function (data, {
 
 		// 转换成美元价格
 		if (symbol.endsWith('btc')) {
-			sumDollar = sumPrice * global.btcPrice;
+			sumDollar = sumPrice * appConfig.prices.btc;
 		} else if (symbol.endsWith('eth')) {
-			sumDollar = sumPrice * global.ethPrice;
+			sumDollar = sumPrice * appConfig.prices.eth;
 		}
 		if ((count > 1 && sumDollar > config.minSumPrice) || (sumDollar > config.minPrice)) {
 			let data = {
 				'count': count,
-				'amount': Number(key).toFixed(amountPrecision),
+				'amount': Number(key).toFixed(amountPrecision), // 量
 				sumCount: sum.toFixed(amountPrecision),
 				sumMoneny: sumPrice.toFixed(2),
 				sumDollar: sumDollar.toFixed(2),

@@ -2,9 +2,6 @@ const WS_HUOBI = require('../../lib/ws-huobi');
 const WS_BINANCE = require('../../lib/ws-binance');
 const hbsdk = require('../../lib/sdk/hbsdk');
 const huobiSymbols = require('../utils/huobiSymbols');
-// 单位为usdt
-global.ethPrice = 200;
-global.btcPrice = 6480;
 
 const symbols = ['btcusdt', 'htusdt', 'bchusdt'];
 
@@ -16,16 +13,16 @@ async function start() {
         symbol: 'btcusdt',
         period: '5min',
     }).then((data) => {
-        global.btcPrice = data[1].close;
+        appConfig.prices.btc = data[1].close;
     }).catch(console);
 
     await hbsdk.getKline({
         symbol: 'ethusdt',
         period: '5min',
     }).then((data) => {
-        global.ethPrice = data[1].close;
+        appConfig.prices.eth = data[1].close;
     }).catch(console);
-    // 先取小数位
+    // 获取全部交易对的精度
     await huobiSymbols.getSymbols();
 
     await WS_HUOBI.open().then(function () {
