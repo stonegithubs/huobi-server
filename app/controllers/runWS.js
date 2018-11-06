@@ -7,10 +7,7 @@ global.ethPrice = 200;
 global.btcPrice = 6480;
 
 const symbols = ['btcusdt', 'htusdt', 'bchusdt'];
-const symbol = {
-    quote: 'usdt',
-    base: 'btc'
-}
+
 
 async function start() {
 
@@ -34,21 +31,21 @@ async function start() {
     await WS_HUOBI.open().then(function () {
         symbols.forEach((symbol) => {
             // 开始订阅
-            WS_HUOBI.call({
-                type: `ws-huobi`,
-                value: 'subscribeDepth',
+            WS_HUOBI.subscribe.sub(WS_HUOBI, {
+                type: `sub`,
+                value: `market.${symbol}.depth.step0`,
                 symbol: `${symbol}`,
                 from: 'server'
             });
-            WS_HUOBI.call({
-                type: `ws-huobi`,
-                value: 'subscribeTrade',
+            WS_HUOBI.subscribe.sub(WS_HUOBI, {
+                type: `sub`,
+                value: `market.${symbol}.trade.detail`,
                 symbol: `${symbol}`,
                 from: 'server'
             });
-            WS_HUOBI.call({
-                type: `ws-huobi`,
-                value: 'subscribeKline',
+            WS_HUOBI.subscribe.sub(WS_HUOBI, {
+                type: `sub`,
+                value:  `market.${symbol}.kline.1min`,
                 symbol: `${symbol}`,
                 from: 'server'
             });
