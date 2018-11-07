@@ -7,20 +7,30 @@ const AbnormalMonitor = require('../utils/AbnormalMonitor');
 const huobiSymbols = require('../utils/huobiSymbols');
 const mysqlModel = require('../models/mysql');
 const WS_SERVER = require('../../lib/ws-server');
+
+
 let exchange = 'huobi';
+
+// 每一个币都存一个throttle包裹的handleDepth方法
+const depthHandles = {};
+
 
 /* 处理返回的数据 */
 function handle(data) {
     switch (data.channel) {
         case 'depth':
-            handleDepth(data);
+            if(typeof depthHandles[data.symbol] !== 'function') {
+                depthHandles[data.symbol] = throttle(handleDepth, 5000, {trailing: false, leading: true});
+            }
+            depthHandles[data.symbol](data);
             break;
         case 'kline':
             WS_SERVER.broadcast({
                 form: 'WS_HUOBI',
                 type: 'kline',
                 symbol: data.symbol,
-                kline: data.kline
+                kline: data.kline,
+                ch: data.ch,
             });
             // broadcast(WS_SERVER, {
             //     type: 'WS_HUOBI',
@@ -38,9 +48,10 @@ module.exports = handle;
 
 /* ----------------------------------------------------------------------------- */
 let disTime = 1000 * 10;
-// 状态异常监控
-const buyMaxAM = new AbnormalMonitor({config: {disTime: disTime, recordMaxLen: 6}});
-const sellMaxAM = new AbnormalMonitor({config: {disTime: disTime, recordMaxLen: 6}});
+// 状态异常监控(缓存多个币)
+const status = {}
+// const buyMaxAM = new AbnormalMonitor({config: {disTime: disTime, recordMaxLen: 6}});
+// const sellMaxAM = new AbnormalMonitor({config: {disTime: disTime, recordMaxLen: 6}});
 
 // 懒惰任务，1000 * 60 s后不激活自动停止
 // const LazyTask = new LazyTask(1000 * 10);
@@ -48,9 +59,23 @@ const sellMaxAM = new AbnormalMonitor({config: {disTime: disTime, recordMaxLen: 
 /**
  * 处理深度数据
  */
-const handleDepth = throttle(function (data) {
+const handleDepth = function (data) {
 
     if (data.tick && data.symbol) {
+
+        // 缓存多个币的异常监控方法
+        let buyMaxAM;
+        let sellMaxAM;
+        if (status[data.symbol] === undefined) {
+            status[data.symbol] = {};
+            status[data.symbol].buyMaxAM = new AbnormalMonitor({config: {disTime: disTime, recordMaxLen: 6}});
+            status[data.symbol].sellMaxAM = new AbnormalMonitor({config: {disTime: disTime, recordMaxLen: 6}});
+        }
+        buyMaxAM = status[data.symbol].buyMaxAM;
+        sellMaxAM = status[data.symbol].sellMaxAM;
+
+        // 价格系数， 价格换算成usdt ，如果交易对是btc， 要*btc的usdt价格
+        const _price = getPriceIndex(symbol);
         let bids1 = data.tick.bids[0];
         let bids2 = data.tick.bids[1];
         let bidsList = getSameAmount(data.tick.bids, {
@@ -73,7 +98,8 @@ const handleDepth = throttle(function (data) {
                 aks1,
                 bids1,
                 tick: data.tick,
-            }
+            },
+            ch: data.ch,
         });
         // [ 6584.05, 0.0004 ]
         // [ { count: 1,
@@ -95,10 +121,10 @@ const handleDepth = throttle(function (data) {
         let currentPrice = (bids1[0] + aks1[0]) / 2;
         let insertData = {
             symbol: data.symbol,
-            sell_1: (aks1[1] * aks1[0]).toFixed(1),
-            sell_2: (aks2[1] * aks2[0]).toFixed(1),
-            buy_1: (bids1[1] * bids1[0]).toFixed(1),
-            buy_2: (bids2[1] * bids2[0]).toFixed(1),
+            sell_1: (aks1[1] * aks1[0] * _price).toFixed(1),
+            sell_2: (aks2[1] * aks2[0] * _price).toFixed(1),
+            buy_1: (bids1[1] * bids1[0] * _price).toFixed(1),
+            buy_2: (bids2[1] * bids2[0] * _price).toFixed(1),
             price: currentPrice > pricePrecision ? currentPrice.toFixed(pricePrecision) : currentPrice,
             bids_max_1: bidsList[0].sumDollar,
             bids_max_2: bidsList[1].sumDollar,
@@ -114,7 +140,6 @@ const handleDepth = throttle(function (data) {
             value: Number(bidsList[0].sumDollar),
             ts
         });
-        console.log(buyMaxAM)
         sellMaxAM.speed({
             value: Number(asksList[0].sumDollar),
             ts
@@ -151,7 +176,7 @@ const handleDepth = throttle(function (data) {
         // console.log(bidsHistoryStatus, asksHistoryStatus)
         
     }
-}, 1000, {trailing: false, leading: true});
+};
 
 /**
  * 获取状态出现的个数

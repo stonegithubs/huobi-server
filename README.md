@@ -13,14 +13,12 @@ Write all virtaul currency
 
 Density.count Density.amount    between  +10% ~ 0% ~ -10%
 
-buy1 buy2 sell1 sell2
+buy1 buy2 sell1 sell2                                                -
 
-bids_max_1 bids_max_2 asks_max_1 asks_max_2
+bids_max_1 = bids[0].sumDollar;  bids_max_2 asks_max_1 asks_max_2                           -
 
-bids.length asks.length
-originBids.length originAsks.length
+bids.length asks.length   -
+originBids.length originAsks.length   -
 
 
-bids.robot.count asks.robot.count
-
-bids[0].sumDollar asks[0].sumDollar
+bids.robot.count asks.robot.count   -
