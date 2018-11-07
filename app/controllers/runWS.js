@@ -3,7 +3,7 @@ const WS_BINANCE = require('../../lib/ws-binance');
 const hbsdk = require('../../lib/sdk/hbsdk');
 const huobiSymbols = require('../utils/huobiSymbols');
 
-const symbols = ['btcusdt', 'htusdt', 'bchusdt'];
+const symbols = ['btcusdt'];
 
 
 async function start() {

@@ -114,7 +114,7 @@ const handleDepth = throttle(function (data) {
             value: Number(bidsList[0].sumDollar),
             ts
         });
-
+        console.log(buyMaxAM)
         sellMaxAM.speed({
             value: Number(asksList[0].sumDollar),
             ts
@@ -151,7 +151,7 @@ const handleDepth = throttle(function (data) {
         // console.log(bidsHistoryStatus, asksHistoryStatus)
         
     }
-}, 5000, {trailing: false, leading: true});
+}, 1000, {trailing: false, leading: true});
 
 /**
  * 获取状态出现的个数
@@ -216,10 +216,6 @@ const handleTrade = function(data) {
     const ts = tradeData.ts;
     // 价格系数， 价格换算成usdt ，如果交易对是btc， 要*btc的usdt价格
     const _price = getPriceIndex(symbol);
-    // 时间截取取  8位作为参考, 大概是1分40s之间的交易会汇总(15320829)
-    // const _time = String(tradeData.ts).substring(0, 8);
-    // 时间填充0补齐13位数 -> 15320829 0000000
-    // const _timeToStringDate = _time.padEnd(13, '0');
     // 2分钟合并一次交易
     let disTime = 2 * 60 * 1000;
     // 先找缓存的数据是否存在
