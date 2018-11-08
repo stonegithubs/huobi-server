@@ -23,6 +23,7 @@ router.post(path + '/buy_limit', function (req, res, next) {
             status: 'ok'
         }));
     }).catch(err => {
+        console.error(err);
         res.end(JSON.stringify(err));
     })
 });
@@ -39,13 +40,13 @@ router.post(path + '/limit', function (req, res, next) {
             status: 'error'
         }));
     }
-    console.log(action)
     hbsdk[action](params).then((data) => {
         res.end(JSON.stringify({
             data: data,
             status: 'ok'
         }));
     }).catch(err => {
+        console.error(err);
         res.end(JSON.stringify(err));
     })
 });
@@ -61,7 +62,7 @@ router.post(path + '/cancelOrder', function (req, res, next) {
             status: 'ok'
         }));
     }).catch(err => {
-        console.log(err);
+        console.error(err);
         res.end(JSON.stringify(err));
     })
 });
@@ -78,7 +79,7 @@ router.get(path + '/openOrders', function (req, res, next) {
             status: 'ok'
         }));
     }).catch(err => {
-        console.log(err);
+        console.error(err);
         res.end(JSON.stringify(err));
     })
 });
@@ -94,7 +95,7 @@ router.get(path + '/get_balance', function (req, res, next) {
             status: 'ok'
         }));
     }).catch(err => {
-        console.log(err);
+        console.error(err);
         res.end(JSON.stringify(err));
     })
 });
@@ -110,7 +111,7 @@ router.get(path + '/get_order', function (req, res, next) {
             status: 'ok'
         }));
     }).catch(err => {
-        console.log(err);
+        console.error(err);
         res.end(JSON.stringify(err));
     })
 });
@@ -127,7 +128,7 @@ router.get(path + '/get_kline', function (req, res, next) {
             status: 'ok'
         }));
     }).catch(err => {
-        console.log(err);
+        console.error(err);
         res.end(JSON.stringify(err));
     })
 });
@@ -143,7 +144,7 @@ router.get(path + '/market/depth', function (req, res, next) {
             status: 'ok'
         }));
     }).catch(err => {
-        console.log(err);
+        console.error(err);
         res.end(JSON.stringify(err));
     })
 });
