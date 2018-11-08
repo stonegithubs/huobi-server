@@ -3,6 +3,7 @@ const huobiSymbols = require('../utils/huobiSymbols');
 const getSameAmount = require('../utils/getSameAmount');
 const getPriceIndex = require('../utils/getPriceIndex');
 const hbsdk = require('../../lib/sdk/hbsdk');
+const mysqlModel = require('../models/mysql');
 
 const queue = new Queue({ limit: 3 });
 
@@ -94,6 +95,7 @@ function fecthDepth(data) {
                 bidsRobotMaxCount,
                 asksRobotMaxCount,
             }
+            mysqlModel.insert('HUOBI_PRESSURE_ZONE', insertData)
         });
     };
     // 会自动开始处理队列
