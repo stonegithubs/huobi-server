@@ -4,11 +4,12 @@ const WS_HUOBI = require('../../lib/ws-huobi');
 const hbsdk = require('../../lib/sdk/hbsdk');
 const huobiSymbols = require('../utils/huobiSymbols');
 const { getWatchSymbols } = require('../models/charts');
+const { initTable } = require('../models/mysql');
 
 let symbols = [];
 
-
 async function start() {
+    await initTable();
     await Promise.all([
         // 查最新的价格
         hbsdk.getKline({

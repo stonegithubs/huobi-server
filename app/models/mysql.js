@@ -4,14 +4,13 @@ let sql = require('./sql');
 
 
 
-function init() {
-
+async function initTable() {
     // [ 
     //     RowDataPacket { Tables_in_huobi: 'huobi_depth' },
     //     RowDataPacket { Tables_in_huobi: 'huobi_pressure_zone' }
     // ]
 
-    connect.query(`SHOW TABLES`).then((mysqlRes, fields) => {
+    return connect.query(`SHOW TABLES`).then((mysqlRes, fields) => {
         let index = mysqlRes.findIndex((o) => o.Tables_in_huobi.toLowerCase() === 'huobi_pressure_zone');
         if (index === -1) {
             createTable('HUOBI_PRESSURE_ZONE');
@@ -34,8 +33,7 @@ function init() {
         console.log(error);
     })
 }
-init();
-
+exports.initTable = initTable;
 
 /**
  * @param {String}
