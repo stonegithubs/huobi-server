@@ -76,15 +76,23 @@ const handleDepth = function (data) {
 
         // 价格系数， 价格换算成usdt ，如果交易对是btc， 要*btc的usdt价格
         const _price = getPriceIndex(data.symbol);
-        let bids1 = data.tick.bids[0];
-        let bids2 = data.tick.bids[1];
-        let bidsList = getSameAmount(data.tick.bids, {
+
+        const originBids = data.tick.bids;
+        const originAsks = data.tick.asks;
+        let bids1 = originBids[0];
+        let bids2 = originBids[1];
+        let aks1 = originAsks[0];
+        let aks2 = originAsks[1];
+
+
+         // 处理数据
+        let bidsList = getSameAmount(originBids, {
             type: 'bids',
             symbol: data.symbol,
         });
-        let aks1 = data.tick.asks[0];
-        let aks2 = data.tick.asks[1];
-        let asksList = getSameAmount(data.tick.asks, {
+       
+        
+        let asksList = getSameAmount(originAsks, {
             type: 'asks',
             symbol: data.symbol,
         });
@@ -125,7 +133,7 @@ const handleDepth = function (data) {
             sell_2: (aks2[1] * aks2[0] * _price).toFixed(1),
             buy_1: (bids1[1] * bids1[0] * _price).toFixed(1),
             buy_2: (bids2[1] * bids2[0] * _price).toFixed(1),
-            price: currentPrice > pricePrecision ? currentPrice.toFixed(pricePrecision) : currentPrice,
+            price: (currentPrice).toString().length > pricePrecision ? currentPrice.toFixed(pricePrecision) : currentPrice,
             bids_max_1: bidsList[0].sumDollar,
             bids_max_2: bidsList[1].sumDollar,
             asks_max_1: asksList[0].sumDollar,

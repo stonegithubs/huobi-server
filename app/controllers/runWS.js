@@ -5,6 +5,7 @@ const hbsdk = require('../../lib/sdk/hbsdk');
 const huobiSymbols = require('../utils/huobiSymbols');
 const { getWatchSymbols } = require('../models/charts');
 const { initTable } = require('../models/mysql');
+const { getAllDetail } = require('./difference');
 
 let symbols = [];
 
@@ -56,6 +57,7 @@ async function start() {
             });
         });
     });
+    getAllDetail();
     // await WS_BINANCE.open();
 }
 exports.start = start;
