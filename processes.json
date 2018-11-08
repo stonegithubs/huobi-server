@@ -7,7 +7,7 @@
             "watch": [
                 "app",
                 "bin",
-                "bin",
+                "lib",
                 "config",
                 "mysql"
             ],
