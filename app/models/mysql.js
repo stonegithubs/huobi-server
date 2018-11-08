@@ -11,24 +11,27 @@ async function initTable() {
     // ]
 
     return connect.query(`SHOW TABLES`).then((mysqlRes, fields) => {
-        let index = mysqlRes.findIndex((o) => o.Tables_in_huobi.toLowerCase() === 'huobi_pressure_zone');
+        let index = mysqlRes.findIndex((o) => o.Tables_in_huobi.toUpperCase() === 'HUOBI_PRESSURE_ZONE');
         if (index === -1) {
             createTable('HUOBI_PRESSURE_ZONE');
         }
-        index = mysqlRes.findIndex((o) => o.Tables_in_huobi.toLowerCase() === 'huobi_trade');
+        index = mysqlRes.findIndex((o) => o.Tables_in_huobi.toUpperCase() === 'HUOBI_TRADE');
         if (index === -1) {
             createTable('HUOBI_TRADE').catch(console.err);
         }
-        index = mysqlRes.findIndex((o) => o.Tables_in_huobi.toLowerCase() === 'watch_symbols');
+        index = mysqlRes.findIndex((o) => o.Tables_in_huobi.toUpperCase() === 'WATCH_SYMBOLS');
         if (index === -1) {
             createTable('WATCH_SYMBOLS').then(function () {
-                const symbols = ['btcusdt', 'htusdt', 'bchusdt', 'btmusdt'];
-                symbols.forEach(symbol => {
+                // const symbols = ['btcusdt', 'htusdt', 'bchusdt', 'btmusdt'];
+                appConfig.watchSymbols.forEach(symbol => {
                     insert('WATCH_SYMBOLS', {symbol});
                 });
             }).catch(console.err);
         }
-
+        index = mysqlRes.findIndex((o) => o.Tables_in_huobi.toUpperCase() === 'HUOBI_CHARACTERISTIC');
+        if (index === -1) {
+            createTable('HUOBI_CHARACTERISTIC').catch(console.err);
+        }
     }).catch(error => {
         console.log(error);
     })

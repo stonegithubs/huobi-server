@@ -212,9 +212,14 @@ class Queue {
             if (delLen > 0) {
                 this.processedLine.push(delTarget);
             }
+            const next = this.getNext();
             // 删除了一个自动添加
-            if (this.getNext() && this.autoPush && autoPush) {
-                this.pushToProcessingLine(this.getNext());
+            if (next && this.autoPush && autoPush) {
+                this.pushToProcessingLine(next);
+            }
+            // 没有队列了
+            if (next === undefined) {
+                this.onend();
             }
         }
         return delTarget;
