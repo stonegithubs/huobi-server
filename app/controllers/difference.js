@@ -1,4 +1,4 @@
-const Queue = require('../utils/queue');
+const Queue = require('../utils/Queue');
 const huobiSymbols = require('../utils/huobiSymbols');
 const getSameAmount = require('../utils/getSameAmount');
 const getPriceIndex = require('../utils/getPriceIndex');
