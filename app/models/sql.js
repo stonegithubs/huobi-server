@@ -35,4 +35,12 @@ exports.HUOBI_TRADE = `
     )ENGINE=InnoDB DEFAULT CHARSET=utf8;
 `;
 
+// 买卖交易金额
+exports.WATCH_SYMBOLS = `
+    CREATE TABLE IF NOT EXISTS WATCH_SYMBOLS(
+        id INT UNSIGNED AUTO_INCREMENT,
+        symbol VARCHAR(10),
+        PRIMARY KEY ( id )
+    )ENGINE=InnoDB DEFAULT CHARSET=utf8;
+`;
 

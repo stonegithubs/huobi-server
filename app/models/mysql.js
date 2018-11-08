@@ -1,4 +1,3 @@
-const findIndex = require('lodash.findindex');
 const connect = require('../../mysql/connect');
 let sql = require('./sql');
 
@@ -13,14 +12,24 @@ function init() {
     // ]
 
     connect.query(`SHOW TABLES`).then((mysqlRes, fields) => {
-        let index = findIndex(mysqlRes, (o) => o.Tables_in_huobi.toLowerCase() == 'huobi_pressure_zone');
+        let index = mysqlRes.findIndex((o) => o.Tables_in_huobi.toLowerCase() === 'huobi_pressure_zone');
         if (index === -1) {
             createTable('HUOBI_PRESSURE_ZONE');
         }
-        index = findIndex(mysqlRes, (o) => o.Tables_in_huobi.toLowerCase() == 'huobi_trade');
+        index = mysqlRes.findIndex((o) => o.Tables_in_huobi.toLowerCase() === 'huobi_trade');
         if (index === -1) {
             createTable('HUOBI_TRADE').catch(console.err);
         }
+        index = mysqlRes.findIndex((o) => o.Tables_in_huobi.toLowerCase() === 'watch_symbols');
+        if (index === -1) {
+            createTable('WATCH_SYMBOLS').then(function () {
+                const symbols = ['btcusdt', 'htusdt', 'bchusdt', 'btmusdt'];
+                symbols.forEach(symbol => {
+                    insert('WATCH_SYMBOLS', {symbol});
+                });
+            }).catch(console.err);
+        }
+
     }).catch(error => {
         console.log(error);
     })
@@ -72,12 +81,6 @@ exports.delTable = delTable;
  */
 function insert(tableName = 'HUOBI_DEPTH', param) {
     return new Promise(function (resolve, reject) {
-        // let param = {
-        //   symbol: '1.symbol',
-        //   time: new Date(),
-        //   asksList: JSON.stringify([]),
-        //   bidsList: JSON.stringify([]),
-        // }
         if (Object.prototype.toString.call(param) !== '[object Object]') {
             console.error(tableName + '写入数据格式有误');
             return;

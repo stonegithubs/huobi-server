@@ -75,7 +75,7 @@ const handleDepth = function (data) {
         sellMaxAM = status[data.symbol].sellMaxAM;
 
         // 价格系数， 价格换算成usdt ，如果交易对是btc， 要*btc的usdt价格
-        const _price = getPriceIndex(symbol);
+        const _price = getPriceIndex(data.symbol);
         let bids1 = data.tick.bids[0];
         let bids2 = data.tick.bids[1];
         let bidsList = getSameAmount(data.tick.bids, {

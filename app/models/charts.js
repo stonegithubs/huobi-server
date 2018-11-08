@@ -88,3 +88,21 @@ function getTrade({
     });
 }
 exports.getTrade = getTrade;
+/**
+ * @return {Promise}
+ */
+function getWatchSymbols() {
+    return new Promise(function (resolve, reject) {
+        connect.query(
+            `
+            SELECT symbol FROM WATCH_SYMBOLS 
+            `
+        ).then((mysqlRes, fields) => {
+            resolve(mysqlRes, fields);
+        }).catch((err) => {
+            console.log(err);
+            reject(err);
+        });
+    });
+}
+exports.getWatchSymbols = getWatchSymbols;

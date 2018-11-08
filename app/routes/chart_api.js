@@ -41,4 +41,21 @@ router.get('/trade', function (req, res, next) {
         next();
     });
 });
+
+router.get('/watchSymbols', function (req, res, next) {
+    chartslModels.getWatchSymbols().then((mysqlRes, fields) => {
+        res.end(sendJSON({
+            data: mysqlRes.map(item => item.symbol),
+            fields: fields,
+            status: 'ok'
+        }));
+    }).catch(err => {
+        console.log(err);
+        res.end(sendJSON({
+            msg: err,
+            status: 'error'
+        }));
+        next();
+    });
+});
 module.exports = router;
