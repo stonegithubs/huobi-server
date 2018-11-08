@@ -42,7 +42,7 @@ router.get('/trade', function (req, res, next) {
     });
 });
 
-router.get('/watchsymbols', function (req, res, next) {
+router.get('/watchSymbols', function (req, res, next) {
     chartslModels.getWatchSymbols().then((mysqlRes, fields) => {
         res.end(sendJSON({
             data: mysqlRes.map(item => item.symbol),
