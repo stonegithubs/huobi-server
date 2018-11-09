@@ -5,7 +5,7 @@ const getPriceIndex = require('../utils/getPriceIndex');
 const hbsdk = require('../../lib/sdk/hbsdk');
 const mysqlModel = require('../models/mysql');
 
-const queue = new Queue({ limit: 4 });
+const queue = new Queue({ limit: 3 });
 
 // 有问题的symbols 或者不需要监控的symbols
 const errorSymbols = [ 

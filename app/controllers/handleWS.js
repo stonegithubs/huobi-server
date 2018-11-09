@@ -60,9 +60,8 @@ const status = {}
  * 处理深度数据
  */
 const handleDepth = function (data) {
-
     if (data.tick && data.symbol) {
-
+        console.log(data.symbol)
         // 缓存多个币的异常监控方法
         let buyMaxAM;
         let sellMaxAM;
@@ -146,16 +145,19 @@ const handleDepth = function (data) {
 
         buyMaxAM.speed({
             value: Number(bidsList[0].sumDollar),
-            ts
+            ts,
+            symbol: data.symbol,
         });
         sellMaxAM.speed({
             value: Number(asksList[0].sumDollar),
-            ts
+            ts,
+            symbol: data.symbol,
         });
         let bidsHistoryStatus = buyMaxAM.historyStatus;
         let asksHistoryStatus = sellMaxAM.historyStatus;
         let buyStatus = getStatusNum(bidsHistoryStatus);
         let sellStatus = getStatusNum(asksHistoryStatus);
+        // 无状况
         if (
             bidsHistoryStatus.length > 2
             && buyStatus['涨'] === 0
@@ -165,19 +167,13 @@ const handleDepth = function (data) {
         ) {
             write(insertData);
         } else if (
+            // 异常
             bidsHistoryStatus.length === 1
             || bidsHistoryStatus[bidsHistoryStatus.length - 1].status !== '横盘'
             || asksHistoryStatus[asksHistoryStatus.length - 1].status !== '横盘'
             || Number(insertData.buy_1) > (5 * appConfig.prices.btc)
             || Number(insertData.sell_1) > (5 * appConfig.prices.btc)
         ) {
-            // console.log(
-            //     bidsHistoryStatus.length,
-            //     bidsHistoryStatus[bidsHistoryStatus.length - 1].status,
-            //     asksHistoryStatus[asksHistoryStatus.length - 1].status,
-            //     Number(insertData.buy_1) > (5 * appConfig.prices.btc),
-            //     Number(insertData.sell_1) > (5 * appConfig.prices.btc)
-            // )
             write2(insertData);
         }
 

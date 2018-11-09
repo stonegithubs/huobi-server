@@ -1,4 +1,6 @@
 const isDev = process.env.NODE_ENV !== 'production';
+
+process.env.UV_THREADPOOL_SIZE = 128;
 console.log(process.env.NODE_ENV)
 const appConfig = {
     hosts: {

@@ -12,8 +12,6 @@ var startWS = require('./app/controllers/runWS');
 var app = express();
 
 
-process.env.UV_THREADPOOL_SIZE = 128;
-
 app.use(logger('dev'));
 app.use(express.json());
 app.use(express.urlencoded({ extended: false }));
