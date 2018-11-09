@@ -61,7 +61,6 @@ const status = {}
  */
 const handleDepth = function (data) {
     if (data.tick && data.symbol) {
-        console.log(data.symbol)
         // 缓存多个币的异常监控方法
         let buyMaxAM;
         let sellMaxAM;
