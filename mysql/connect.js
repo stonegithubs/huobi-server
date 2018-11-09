@@ -1,15 +1,14 @@
 const mysql       = require('mysql');
 var privateConfig = require('config');
 
-
-const mysqlConfig = privateConfig.get(appConfig.isDev ? 'mysqlLocal' : 'tencentMysql');
+const dbConfig = privateConfig.get('dbConfig');
 
 let config = {
-  host                : mysqlConfig.host,
-  user                : mysqlConfig.user,
-  password            : mysqlConfig.password,
-  port                : mysqlConfig.port || 3306,
-  database            : mysqlConfig.database,
+  host                : dbConfig.host,
+  user                : dbConfig.user,
+  password            : dbConfig.password,
+  port                : dbConfig.port || 3306,
+  database            : dbConfig.database,
   insecureAuth        : true,
   useConnectionPooling: true,
 };

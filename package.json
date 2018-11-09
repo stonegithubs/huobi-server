@@ -5,7 +5,7 @@
   "scripts": {
     "start": "cross-env NODE_ENV=development node ./bin/www",
     "dev": "npm run start",
-    "prod": "cross-env NODE_ENV=production npm run start",
+    "prod": "cross-env NODE_ENV=production node ./bin/www",
     "pm2:dev": "pm2 start processes.json --env development",
     "pm2:prod": "pm2 start processes.json --env production"
   },
