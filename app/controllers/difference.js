@@ -7,28 +7,7 @@ const mysqlModel = require('../models/mysql');
 
 const queue = new Queue({ limit: 3 });
 
-// 有问题的symbols 或者不需要监控的symbols
-const errorSymbols = [ 
-    'venusdt',
-    'mtxbtc',
-    'venbtc',
-    'mdsbtc',
-    'ekobtc',
-    'evxbtc',
-    'saltbtc',
-    'gxcbtc',
-    'bixbtc',
-    'bixusdt',
-    'bt1btc',
-    'bt2btc',
-    'bkbtbtc',
-    'ucbtc',
-    'hotbtc',
-    'zjltbtc',
-    'cdcbtc' 
-]
-;
-
+const errorSymbols = [];
 function getAllDetail() {
     
     huobiSymbols.getSymbols().then(list => {

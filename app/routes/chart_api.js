@@ -16,7 +16,7 @@ router.get('/amount', function (req, res, next) {
             status: 'ok'
         }));
     }).catch(err => {
-        console.log(err);
+        console.error(err);
         res.end(sendJSON({
             msg: err,
             status: 'error'
@@ -24,6 +24,8 @@ router.get('/amount', function (req, res, next) {
         next();
     });
 });
+
+
 router.get('/trade', function (req, res, next) {
     const param = req.query;
     chartslModels.getTrade(param).then((mysqlRes, fields) => {
@@ -33,7 +35,7 @@ router.get('/trade', function (req, res, next) {
             status: 'ok'
         }));
     }).catch(err => {
-        console.log(err);
+        console.error(err);
         res.end(sendJSON({
             msg: err,
             status: 'error'
@@ -50,7 +52,7 @@ router.get('/watchSymbols', function (req, res, next) {
             status: 'ok'
         }));
     }).catch(err => {
-        console.log(err);
+        console.error(err);
         res.end(sendJSON({
             msg: err,
             status: 'error'

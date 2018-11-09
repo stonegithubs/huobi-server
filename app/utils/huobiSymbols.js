@@ -1,5 +1,26 @@
 const hbsdk = require('../../lib/sdk/hbsdk');
-
+const appConfig = require('../config');
+// 有问题的symbols 或者不需要监控的symbols
+const errorSymbols = [ 
+    'venusdt',
+    'mtxbtc',
+    'venbtc',
+    'mdsbtc',
+    'ekobtc',
+    'evxbtc',
+    'saltbtc',
+    'gxcbtc',
+    'bixbtc',
+    'bixusdt',
+    'bt1btc',
+    'bt2btc',
+    'bkbtbtc',
+    'ucbtc',
+    'hotbtc',
+    'zjltbtc',
+    'cdcbtc' 
+]
+;
 // 缓存结果
 let _symbols = [];
 
@@ -9,7 +30,14 @@ const getSymbols = async function() {
     if (_symbols.length > 0) {
         return _symbols;
     }
-    _symbols = await hbsdk.getSymbols();
+    _symbols = await hbsdk.getSymbols().then((data) => {
+        return data.filter((item) => {
+            if (errorSymbols.includes(item.symbol)) {
+                return false;
+            }
+            return true;
+        })
+    });
     return _symbols;
 }
 exports.getSymbols = getSymbols;

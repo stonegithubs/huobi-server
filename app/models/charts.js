@@ -1,19 +1,9 @@
-const moment = require('moment');
+
 const connect = require('../../mysql/connect');
+const getInterval24 = require('../utils/getInterval24');
 let sql = require('./sql');
 
 
-/**
- * 获取24小时内的数据
- * @return {Date[]}
- */
-function getInterval24() {
-    return [
-        moment(Date.now() - (24 * 60 * 60 * 1000)).format("YYYY/MM/DD H:mm:ss"),
-        moment().format("YYYY/MM/DD H:mm:ss")
-    ]
-}
-exports.getInterval24 = getInterval24;
 
 /**
  * 获取压力位 以amount 体现
@@ -53,6 +43,8 @@ function getPressure({
     });
 }
 exports.getPressure = getPressure;
+
+
 
 /**
  * 获取资金交易额

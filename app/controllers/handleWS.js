@@ -61,17 +61,7 @@ const status = {}
  */
 const handleDepth = function (data) {
     if (data.tick && data.symbol) {
-        // 缓存多个币的异常监控方法
-        let buyMaxAM;
-        let sellMaxAM;
-        if (status[data.symbol] === undefined) {
-            status[data.symbol] = {};
-            status[data.symbol].buyMaxAM = new AbnormalMonitor({config: {disTime: disTime, recordMaxLen: 6}});
-            status[data.symbol].sellMaxAM = new AbnormalMonitor({config: {disTime: disTime, recordMaxLen: 6}});
-        }
-        buyMaxAM = status[data.symbol].buyMaxAM;
-        sellMaxAM = status[data.symbol].sellMaxAM;
-
+        
         // 价格系数， 价格换算成usdt ，如果交易对是btc， 要*btc的usdt价格
         const _price = getPriceIndex(data.symbol);
 
@@ -107,6 +97,7 @@ const handleDepth = function (data) {
             },
             ch: data.ch,
         });
+        
         // [ 6584.05, 0.0004 ]
         // [ { count: 1,
         //     amount: '13.0787',
@@ -141,6 +132,21 @@ const handleDepth = function (data) {
             time: new Date(ts),
             exchange: exchange,
         }
+        // 非监控的币，不写入数据库，直接返回给前端
+        if (!appConfig.watchSymbols.includes(data.symbol)) {
+            return;
+        }
+        /* -------write------- */
+        // 缓存多个币的异常监控方法
+        let buyMaxAM;
+        let sellMaxAM;
+        if (status[data.symbol] === undefined) {
+            status[data.symbol] = {};
+            status[data.symbol].buyMaxAM = new AbnormalMonitor({config: {disTime: disTime, recordMaxLen: 6}});
+            status[data.symbol].sellMaxAM = new AbnormalMonitor({config: {disTime: disTime, recordMaxLen: 6}});
+        }
+        buyMaxAM = status[data.symbol].buyMaxAM;
+        sellMaxAM = status[data.symbol].sellMaxAM;
 
         buyMaxAM.speed({
             value: Number(bidsList[0].sumDollar),
