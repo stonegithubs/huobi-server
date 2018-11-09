@@ -1,7 +1,7 @@
 const isDev = process.env.NODE_ENV !== 'production';
+console.log(process.env.NODE_ENV)
 
 process.env.UV_THREADPOOL_SIZE = 128;
-console.log(process.env.NODE_ENV)
 const appConfig = {
     hosts: {
       api_huobi: 'https//api.huobi.br.com',
