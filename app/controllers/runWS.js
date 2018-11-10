@@ -4,11 +4,30 @@ const WS_HUOBI = require('../../lib/ws-huobi');
 const hbsdk = require('../../lib/sdk/hbsdk');
 const huobiSymbols = require('../utils/huobiSymbols');
 const { getWatchSymbols } = require('../models/charts');
+const AbnormalMonitor = require('../utils/AbnormalMonitor');
 const { initTable } = require('../models/mysql');
 const { getAllDetail } = require('./difference');
 
 let symbols = [];
-
+// const priceKline = new AbnormalMonitor({config: {range: 0.03, disTime: 0, recordMaxLen: 300}});
+// const amountKline = new AbnormalMonitor({config: {range: 6, disTime: 0, recordMaxLen: 300}});
+// hbsdk.getKline({
+//     symbol: 'bchusdt',
+//     period: '30min',
+//     size: 300,
+// }).then((data) => {
+//     data.reverse().forEach((item) => {
+//         priceKline.speed({
+//             value: item.close,
+//             ts: new Date(Number(item.id + '000')).getTime(),
+//         });
+//         amountKline.speed({
+//             value: (item.vol / appConfig.prices.btc).toFixed(2),
+//             ts: new Date(Number(item.id + '000')).getTime(),
+//         });
+//     });
+//     console.log(data, priceKline, amountKline)
+// }).catch(console.error)
 async function start() {
     await initTable();
     await Promise.all([

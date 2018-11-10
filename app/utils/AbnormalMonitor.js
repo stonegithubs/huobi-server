@@ -107,7 +107,7 @@ class AbnormalMonitor {
         // "direction": "buy",
         // "tradeId":   601595424,
         // "ts":        1494495766000
-        if (ts > this.nextTime) {
+        if (ts > this.nextTime || disTime === 0) {
             const disValue = data.value - this._preTrade.value;
             let status = disValue > 0 ? '涨' : '跌';
             
