@@ -5,7 +5,7 @@ const getPriceIndex = require('../utils/getPriceIndex');
 const hbsdk = require('../../lib/sdk/hbsdk');
 const mysqlModel = require('../models/mysql');
 
-const queue = new Queue({ limit: 3 });
+const queue = new Queue({ limit: 1 });
 
 const errorSymbols = [];
 function getAllDetail() {
