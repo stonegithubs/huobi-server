@@ -40,11 +40,21 @@ const arrayIndexOf = function (array, target) {
 * }
 * @constructor constructor(Option)
 * @example
-    一。
+    一(1)。
+    const queue = new Queue({ limit: 5 });
+    const queueItem = (done) => {
+        'todo Something';
+        // 过了很久后处理完了一个
+        done();
+    };
+    // 会自动开始处理队列
+    queue.push(queueItem);
+
+    一(2)。
     const queue = new Queue({ limit: 5 });
     const queueItem = {
-        uuid: 12132132,
-        value: () => {'todo Something';}
+      uuid: 12132132,
+      value: () => {'todo Something';}
     };
     // 会自动开始处理队列
     queue.push(queueItem);
@@ -83,6 +93,9 @@ class Queue {
         this.processedLine = [];
         // 下一个(暂时无用)
         this.nextIndex = -1;
+
+        // event
+        this.onend = function () {};
     }
     /**
      * 获取下一个
@@ -134,7 +147,7 @@ class Queue {
     }
     /**
      * 添加排队成员，自动添加到处理中的队列
-     * @param {QueueItem}
+     * @param {QueueItem | function}
      * @return {Number} this.line.length
      */
     push(item) {
@@ -155,7 +168,7 @@ class Queue {
 
     /**
      * 添加到处理中队列
-     * @param {QueueItem}
+     * @param {QueueItem | function}
      * @return {Number | boolean} length | boolean
      */
     pushToProcessingLine(item) {
@@ -177,10 +190,13 @@ class Queue {
         // 2.添加item到正在处理队伍中，并执行
         this.processingLine.push(item);
         // 3.执行任务，接下来可能会立马push.
+        let done = () => {
+            this.done(item);
+        };
         if (item.uuid) {
-            item.value();
+            item.value(done);
         } else {
-            item();
+            item(done);
         }
         return this.processingLine.length;
     }

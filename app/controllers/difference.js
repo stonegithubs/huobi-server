@@ -33,7 +33,7 @@ exports.getAllDetail = getAllDetail;
 function fecthDepth(data) {
     const symbol = data.symbol;
 
-    const queueItem = function () {
+    const queueItem = function (done) {
         hbsdk.getDepth({
             symbol: symbol,
             type: 'step0'
@@ -116,13 +116,13 @@ function fecthDepth(data) {
             }
 
             mysqlModel.insert('HUOBI_CHARACTERISTIC', insertData).then(function () {
-                queue.done(queueItem);
+                done(queueItem);
             });
         }).catch((err) => {
             if (!errorSymbols.includes(symbol)) {
                 errorSymbols.push(symbol);
             }
-            queue.done(queueItem);
+            done(queueItem);
         });
     };
     // 会自动开始处理队列
