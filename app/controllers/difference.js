@@ -30,6 +30,8 @@ function getAllDetail() {
 }
 exports.getAllDetail = getAllDetail;
 
+const cache = {};
+exports.cache = cache;
 function fecthDepth(data) {
     const symbol = data.symbol;
 
@@ -114,7 +116,7 @@ function fecthDepth(data) {
                 bidsRobotMaxCount,
                 asksRobotMaxCount,
             }
-
+            cache[symbol] = insertData;
             mysqlModel.insert('HUOBI_CHARACTERISTIC', insertData).then(function () {
                 done(queueItem);
             });

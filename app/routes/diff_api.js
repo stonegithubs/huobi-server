@@ -3,7 +3,7 @@ const router = express.Router();
 const difflModels = require('../models/diff');
 const huobiSymbols = require('../utils/huobiSymbols');
 const appConfig = require('../config');
-
+const diffControllers = require('../controllers/difference');
 function sendJSON(json) {
     return JSON.stringify(json)
 }
@@ -19,15 +19,11 @@ function filterSymbols() {
 router.get('/characteristic', function (req, res, next) {
     const param = req.query;
     if (param.symbol === 'all') {
-        filterSymbols().then(list => {
-            chartslModels.getCharacteristic(param).then((mysqlRes, fields) => {
-                res.end(sendJSON({
-                    data: mysqlRes,
-                    fields: fields,
-                    status: 'ok'
-                }));
-            })
-        });
+        res.end(sendJSON({
+            data: diffControllers.cache,
+            status: 'ok'
+        }));
+        return;
     }
     chartslModels.getCharacteristic(param).then((mysqlRes, fields) => {
         res.end(sendJSON({
