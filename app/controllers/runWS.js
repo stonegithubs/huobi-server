@@ -60,7 +60,7 @@ async function start() {
         });
     });
     getAllDetail();
-    // train();
+    train();
     // await WS_BINANCE.open();
 }
 exports.start = start;
