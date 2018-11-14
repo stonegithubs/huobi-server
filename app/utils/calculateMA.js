@@ -31,14 +31,14 @@ class CalculateMA {
         this.dayCount = dayCount;
         this.result = [];
     }
-    push(data, index) {
+    push(data, index, key = 'close') {
         if (index < this.dayCount) {
             this.result.push('-');
             return;
         }
         var sum = 0;
         for (var j = 0; j < this.dayCount; j++) {
-            sum += data[index - j].close;
+            sum += data[index - j][key];
         }
         this.result.push(sum / this.dayCount);
     }   
