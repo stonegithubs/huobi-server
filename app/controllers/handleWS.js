@@ -3,6 +3,7 @@ const moment = require('moment');
 const getSameAmount = require('../utils/getSameAmount');
 const getPriceIndex = require('../utils/getPriceIndex');
 const AbnormalMonitor = require('../utils/AbnormalMonitor');
+const getStatusNum = require('../utils/getStatusNum');
 // const LazyTask = require('../utils/LazyTask');
 const huobiSymbols = require('../utils/huobiSymbols');
 const mysqlModel = require('../models/mysql');
@@ -61,9 +62,9 @@ const status = {}
  */
 const handleDepth = function (data) {
     if (data.tick && data.symbol) {
-        
+        const symbol = data.symbol;
         // 价格系数， 价格换算成usdt ，如果交易对是btc， 要*btc的usdt价格
-        const _price = getPriceIndex(data.symbol);
+        const _price = getPriceIndex(symbol);
 
         const originBids = data.tick.bids;
         const originAsks = data.tick.asks;
@@ -76,18 +77,18 @@ const handleDepth = function (data) {
          // 处理数据
         let bidsList = getSameAmount(originBids, {
             type: 'bids',
-            symbol: data.symbol,
+            symbol: symbol,
         });
        
         
         let asksList = getSameAmount(originAsks, {
             type: 'asks',
-            symbol: data.symbol,
+            symbol: symbol,
         });
         WS_SERVER.broadcast({
             form: 'WS_HUOBI',
             type: 'depth',
-            symbol: data.symbol,
+            symbol: symbol,
             data: {
                 bidsList,
                 asksList,
@@ -111,13 +112,13 @@ const handleDepth = function (data) {
 
         // 取当前时间
         let ts = Date.now();
-        let symbolInfo = huobiSymbols.getSymbolInfo(data.symbol);
+        let symbolInfo = huobiSymbols.getSymbolInfo(symbol);
         let amountPrecision = symbolInfo['amount-precision'];
         let pricePrecision = symbolInfo['price-precision'];
 
         let currentPrice = (bids1[0] + aks1[0]) / 2;
         let insertData = {
-            symbol: data.symbol,
+            symbol: symbol,
             sell_1: (aks1[1] * aks1[0] * _price).toFixed(1),
             sell_2: (aks2[1] * aks2[0] * _price).toFixed(1),
             buy_1: (bids1[1] * bids1[0] * _price).toFixed(1),
@@ -133,30 +134,30 @@ const handleDepth = function (data) {
             exchange: exchange,
         }
         // 非监控的币，不写入数据库，直接返回给前端
-        if (!appConfig.watchSymbols.includes(data.symbol)) {
+        if (!appConfig.watchSymbols.includes(symbol)) {
             return;
         }
         /* -------write------- */
         // 缓存多个币的异常监控方法
         let buyMaxAM;
         let sellMaxAM;
-        if (status[data.symbol] === undefined) {
-            status[data.symbol] = {};
-            status[data.symbol].buyMaxAM = new AbnormalMonitor({config: {disTime: disTime, recordMaxLen: 6}});
-            status[data.symbol].sellMaxAM = new AbnormalMonitor({config: {disTime: disTime, recordMaxLen: 6}});
+        if (status[symbol] === undefined) {
+            status[symbol] = {};
+            status[symbol].buyMaxAM = new AbnormalMonitor({config: {disTime: disTime, recordMaxLen: 6}});
+            status[symbol].sellMaxAM = new AbnormalMonitor({config: {disTime: disTime, recordMaxLen: 6}});
         }
-        buyMaxAM = status[data.symbol].buyMaxAM;
-        sellMaxAM = status[data.symbol].sellMaxAM;
+        buyMaxAM = status[symbol].buyMaxAM;
+        sellMaxAM = status[symbol].sellMaxAM;
 
         buyMaxAM.speed({
             value: Number(bidsList[0].sumDollar),
             ts,
-            symbol: data.symbol,
+            symbol: symbol,
         });
         sellMaxAM.speed({
             value: Number(asksList[0].sumDollar),
             ts,
-            symbol: data.symbol,
+            symbol: symbol,
         });
         let bidsHistoryStatus = buyMaxAM.historyStatus;
         let asksHistoryStatus = sellMaxAM.historyStatus;
@@ -187,33 +188,6 @@ const handleDepth = function (data) {
     }
 };
 
-/**
- * 获取状态出现的个数
- * @param {Arrar<Object>} status
- * @return {Object}
- */
-function getStatusNum(status) {
-    if (!Array.isArray(status)) {
-        console.error('status not Array');
-        return;
-    }
-    // 状态出现的个数
-    let res = {
-        '横盘': 0,
-        '涨': 0,
-        '跌': 0,
-    }
-    status.forEach(item => {
-        if (item.status === '横盘') {
-            res['横盘']++;
-        } else if(item.status === '涨') {
-            res['涨']++;
-        } else if(item.status === '跌') {
-            res['跌']++;
-        }
-    });
-    return res;
-}
 
 const write = throttle(function(insertData) {
     mysqlModel.insert('HUOBI_PRESSURE_ZONE', insertData);
