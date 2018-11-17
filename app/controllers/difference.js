@@ -63,6 +63,7 @@ function fecthDepth(data) {
 }
 
 function handleDepth(res, symbol) {
+    const ts = new Date();
     const originBids = res.tick.bids;
     const originAsks = res.tick.asks;
 
@@ -116,11 +117,11 @@ function handleDepth(res, symbol) {
     });
     let bidsRobotMaxCount = bidsListOrderByCount[0].count;
     let asksRobotMaxCount = asksListOrderByCount[0].count;
-
+    
     let insertData = {
         symbol,
         exchange: 'huobi',
-        time: new Date(),
+        time: ts,
         price: (currentPrice).toString().length > pricePrecision ? currentPrice.toFixed(pricePrecision) : currentPrice,
         bids_max_1,
         bids_max_2,
@@ -140,7 +141,7 @@ function handleDepth(res, symbol) {
         asksRobotMaxCount,
     }
     cache[symbol] = insertData;
-    
+
     // 缓存多个币的异常监控方法
     let buyMaxAM;
     let sellMaxAM;
@@ -149,24 +150,27 @@ function handleDepth(res, symbol) {
         status[symbol].buyMaxAM = new AbnormalMonitor({ config: { disTime: disTime, recordMaxLen: 6 } });
         status[symbol].sellMaxAM = new AbnormalMonitor({ config: { disTime: disTime, recordMaxLen: 6 } });
     }
+
     buyMaxAM = status[symbol].buyMaxAM;
     sellMaxAM = status[symbol].sellMaxAM;
 
     buyMaxAM.speed({
         value: Number(bidsList[0].sumDollar),
-        ts,
+        ts: ts.getTime(),
         symbol: symbol,
     });
+
     sellMaxAM.speed({
         value: Number(asksList[0].sumDollar),
-        ts,
+        ts: ts.getTime(),
         symbol: symbol,
     });
+  
     let bidsHistoryStatus = buyMaxAM.historyStatus;
     let asksHistoryStatus = sellMaxAM.historyStatus;
     let buyStatus = getStatusNum(bidsHistoryStatus);
     let sellStatus = getStatusNum(asksHistoryStatus);
-
+   
 
      // 无状况
      if (
@@ -195,5 +199,6 @@ const write = throttle(function (insertData) {
 }, 1000 * 60 * 10, { trailing: false, leading: true });
 
 const write2 = throttle(function (insertData) {
+    console.log('inert')
     mysqlModel.insert('HUOBI_CHARACTERISTIC', insertData);
 }, 1000 * 20, { trailing: false, leading: true });
