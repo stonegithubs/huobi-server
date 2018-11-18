@@ -199,6 +199,5 @@ const write = throttle(function (insertData) {
 }, 1000 * 60 * 10, { trailing: false, leading: true });
 
 const write2 = throttle(function (insertData) {
-    console.log('inert')
     mysqlModel.insert('HUOBI_CHARACTERISTIC', insertData);
 }, 1000 * 20, { trailing: false, leading: true });
