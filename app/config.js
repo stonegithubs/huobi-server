@@ -13,7 +13,7 @@ const appConfig = {
       btc: 6500,
       etch: 210,
     },
-    watchSymbols: ['btcusdt', 'htusdt', 'bchusdt', 'btmusdt']
+    watchSymbols: ['btcusdt', 'ethusdt', 'xrpusdt', 'eosusdt', 'htusdt', 'bchusdt', 'btmusdt']
 }
 global.appConfig = appConfig;
 module.exports = appConfig;
