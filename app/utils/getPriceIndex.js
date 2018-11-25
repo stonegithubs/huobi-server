@@ -8,9 +8,10 @@
 const getPriceIndex = function (symbol) {
     // btc eth交易对转美元
     let _temp = {
-        usdt: 1,
+        usdt: 0.97,
         btc: appConfig.prices.btc,
         eth: appConfig.prices.eth,
+        husd: 1,
     }
     let _price;
     for (let key in _temp) {
