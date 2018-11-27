@@ -5,19 +5,20 @@ const { CalculateMA } = require('../utils/calculateMA');
 const appConfig = require('../config');
 
 let pRange = 0.01;
-let aRage = 1;
+let aRage = 0.5;
 let heng = 0;
-let dataCount = 300;
+let dataCount = 1000;
 const priceKline = new AbnormalMonitor({config: {range: pRange, disTime: 0, recordMaxLen: dataCount}});
 const amountKline = new AbnormalMonitor({config: {range: aRage, disTime: 0, recordMaxLen: dataCount}});
 
 const status  = {
-    action: 'buy'
+    action: 'buy',
+    MAstatus: '<MA%'
 }
 function train() {
     hbsdk.getKline({
-        symbol: 'bchusdt',
-        period: '30min',
+        symbol: 'btcusdt',
+        period: '5min',
         size: dataCount,
     }).then((data) => {
         let pMA5 = new CalculateMA(5);
@@ -41,23 +42,23 @@ function train() {
             if (priceKline.historyStatus.length < 2) {
                 return;
             }
-            let preLast1 = priceKline.historyStatus[priceKline.historyStatus.length - 2];
-            let preLast2 = amountKline.historyStatus[amountKline.historyStatus.length - 2];
+            let prePLast1 = priceKline.historyStatus[priceKline.historyStatus.length - 2];
+            let preALast2 = amountKline.historyStatus[amountKline.historyStatus.length - 2];
 
-            let last1 = priceKline.historyStatus[priceKline.historyStatus.length - 1];
-            let last2 = amountKline.historyStatus[amountKline.historyStatus.length - 1];
+            let pLast1 = priceKline.historyStatus[priceKline.historyStatus.length - 1];
+            let aLast2 = amountKline.historyStatus[amountKline.historyStatus.length - 1];
 
-            if (last2.status === '涨') {
+            if (preALast2.status === '涨' && aLast2.status === '涨') {
                 if (
-                    status.action === 'sell'
-                    && (last1.status === '涨' || item.close > pMA60.last())) {
+                    // status.action === 'sell' &&
+                    (prePLast1.status === '涨' || item.close > (pMA60.last() * 1.02) )) {
                     status.action = 'buy'
-                    console.log('卖', new Date(Number(item.id + '000')), (item.close * 1.01).toFixed(1));
+                    console.log('卖', new Date(Number(item.id + '000')), (item.close * 1).toFixed(1));
                 }
                 if (
-                    status.action === 'buy'
-                    && last1.status === '跌' 
-                    && item.close < pMA5.last()
+                    // status.action === 'buy' && 
+                    prePLast1.status === '跌' 
+                    // && item.close < pMA5.last()
                     && item.close < pMA30.last()
                 ) {
                     status.action = 'sell'
