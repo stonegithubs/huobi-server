@@ -1,6 +1,7 @@
 const express = require('express');
 const router = express.Router();
 const difflModels = require('../models/diff');
+
 const huobiSymbols = require('../utils/huobiSymbols');
 const appConfig = require('../config');
 const diffControllers = require('../controllers/difference');
@@ -25,7 +26,7 @@ router.get('/characteristic', function (req, res, next) {
         }));
         return;
     }
-    chartslModels.getCharacteristic(param).then((mysqlRes, fields) => {
+    difflModels.getCharacteristic(param).then((mysqlRes, fields) => {
         res.end(sendJSON({
             data: mysqlRes,
             fields: fields,
@@ -41,6 +42,23 @@ router.get('/characteristic', function (req, res, next) {
     });
 });
 
+router.get('/characteristic/chart', function (req, res, next) {
+    const param = req.query;
+    difflModels.getPressure(param).then((mysqlRes, fields) => {
+        res.end(sendJSON({
+            data: mysqlRes,
+            fields: fields,
+            status: 'ok'
+        }));
+    }).catch(err => {
+        console.error(err);
+        res.end(sendJSON({
+            msg: err,
+            status: 'error'
+        }));
+        next();
+    });
+});
 
 router.get('/diffSymbols', function (req, res, next) {
     const param = req.query;
