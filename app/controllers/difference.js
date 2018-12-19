@@ -174,12 +174,13 @@ function handleDepth(res, symbol) {
 
      // 无状况
      if (
-        bidsHistoryStatus.length > 2
+        bidsHistoryStatus.length > 5
         && buyStatus['涨'] === 0
         && buyStatus['跌'] === 0
         && sellStatus['跌'] === 0
         && sellStatus['跌'] === 0
     ) {
+        console.log('无状态')
         write(insertData);
     } else if (
         // 异常
