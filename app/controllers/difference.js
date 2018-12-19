@@ -180,7 +180,6 @@ function handleDepth(res, symbol) {
         && sellStatus['跌'] === 0
         && sellStatus['跌'] === 0
     ) {
-        console.log('无状态')
         write(insertData);
     } else if (
         // 异常
